@@ -28,6 +28,9 @@ class WH_Install {
 		// Set default settings
 		self::set_default_settings();
 
+		// Create registration page
+		self::create_registration_page();
+
 		// Flush rewrite rules
 		flush_rewrite_rules();
 	}
@@ -67,11 +70,58 @@ class WH_Install {
 			'min_cart_value'          => 150.00,
 			'disable_coupons'         => false,
 			'registration_approval'   => false,
+			'registration_page_id'    => 0, // Will be set by create_registration_page()
 		);
 
 		// Only set if not already exists
 		if ( ! get_option( 'wholesale_powerhouse_settings' ) ) {
 			update_option( 'wholesale_powerhouse_settings', $default_settings );
+		}
+	}
+
+	/**
+	 * Create wholesale registration page
+	 */
+	private static function create_registration_page() {
+		$settings = get_option( 'wholesale_powerhouse_settings', array() );
+		
+		// Check if page is already set in settings
+		$existing_page_id = isset( $settings['registration_page_id'] ) ? intval( $settings['registration_page_id'] ) : 0;
+		
+		// If page exists and is published, skip creation
+		if ( $existing_page_id > 0 && get_post_status( $existing_page_id ) === 'publish' ) {
+			return;
+		}
+
+		// Check if a page with this title already exists
+		$page_title = __( 'Wholesale Registration Form', 'wholesale-powerhouse' );
+		$existing_page = get_page_by_title( $page_title, OBJECT, 'page' );
+
+		if ( $existing_page && $existing_page->post_status === 'publish' ) {
+			// Page exists, just update the setting
+			$settings['registration_page_id'] = $existing_page->ID;
+			update_option( 'wholesale_powerhouse_settings', $settings );
+			return;
+		}
+
+		// Create new page
+		$page_content = '[wholesale_registration_form]';
+		$page_data = array(
+			'post_title'     => $page_title,
+			'post_content'   => $page_content,
+			'post_status'    => 'publish',
+			'post_type'      => 'page',
+			'post_author'    => 1,
+			'comment_status' => 'closed',
+			'ping_status'    => 'closed',
+		);
+
+		$page_id = wp_insert_post( $page_data );
+
+		if ( $page_id && ! is_wp_error( $page_id ) ) {
+			// Update settings with new page ID
+			$settings['registration_page_id'] = $page_id;
+			update_option( 'wholesale_powerhouse_settings', $settings );
 		}
 	}
 }

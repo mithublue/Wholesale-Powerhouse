@@ -18,6 +18,13 @@ if ( ! defined( 'WPINC' ) ) {
 class WH_Pricing {
 
 	/**
+	 * Flag to prevent infinite loops
+	 *
+	 * @var bool
+	 */
+	private static $processing = false;
+
+	/**
 	 * Initialize the pricing engine
 	 */
 	public function __construct() {
@@ -53,6 +60,11 @@ class WH_Pricing {
 	 * @return float Modified price
 	 */
 	public function get_wholesale_price( $price, $product ) {
+		// Prevent infinite loops
+		if ( self::$processing ) {
+			return $price;
+		}
+
 		// Check if user is a wholesale customer
 		if ( ! WH_Roles::is_wholesale_customer() ) {
 			return $price;
@@ -64,22 +76,26 @@ class WH_Pricing {
 			return $price;
 		}
 
+		// Set processing flag
+		self::$processing = true;
+
 		// Get product ID (handle variations)
 		$product_id = $product->get_id();
-		if ( $product->is_type( 'variation' ) ) {
-			$parent_id = $product->get_parent_id();
-		}
 
 		// Check for fixed wholesale price
 		$fixed_price = get_post_meta( $product_id, '_wh_price_' . $user_role, true );
 		
-		if ( $fixed_price !== '' && $fixed_price !== false && is_numeric( $fixed_price ) ) {
+		if ( $fixed_price !== '' && $fixed_price !== false && is_numeric( $fixed_price ) && floatval( $fixed_price ) > 0 ) {
+			self::$processing = false;
 			return floatval( $fixed_price );
 		}
 
 		// No fixed price, apply global discount
 		$wholesale_price = $this->apply_global_discount( $price, $user_role, $product );
 		
+		// Reset processing flag
+		self::$processing = false;
+
 		return $wholesale_price !== false ? $wholesale_price : $price;
 	}
 
@@ -103,21 +119,16 @@ class WH_Pricing {
 
 		$discount_percent = floatval( $roles[ $user_role ]['discount'] );
 
-		// Get regular price for discount calculation
-		$regular_price = $price;
-		if ( method_exists( $product, 'get_regular_price' ) ) {
-			$base_regular_price = $product->get_regular_price();
-			if ( $base_regular_price > 0 ) {
-				$regular_price = $base_regular_price;
-			}
-		}
-
-		if ( $regular_price <= 0 || $discount_percent <= 0 ) {
+		// If no discount or invalid price, return false
+		if ( $discount_percent <= 0 || ! is_numeric( $price ) || floatval( $price ) <= 0 ) {
 			return false;
 		}
 
+		// Use the current price (which could be regular or sale price)
+		$base_price = floatval( $price );
+
 		// Calculate discounted price
-		$wholesale_price = $regular_price - ( $regular_price * ( $discount_percent / 100 ) );
+		$wholesale_price = $base_price - ( $base_price * ( $discount_percent / 100 ) );
 
 		return $wholesale_price;
 	}

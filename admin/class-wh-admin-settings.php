@@ -81,6 +81,7 @@ class WH_Admin_Settings {
 		$settings['min_cart_value']        = isset( $_POST['wh_min_cart_value'] ) ? floatval( $_POST['wh_min_cart_value'] ) : 0;
 		$settings['disable_coupons']       = isset( $_POST['wh_disable_coupons'] ) ? true : false;
 		$settings['registration_approval'] = isset( $_POST['wh_registration_approval'] ) ? true : false;
+		$settings['registration_page_id']  = isset( $_POST['wh_registration_page_id'] ) ? intval( $_POST['wh_registration_page_id'] ) : 0;
 
 		// Save settings
 		update_option( 'wholesale_powerhouse_settings', $settings );
@@ -208,6 +209,24 @@ class WH_Admin_Settings {
 			'type'    => 'checkbox',
 			'default' => 'no',
 			'value'   => isset( $current_settings['registration_approval'] ) && $current_settings['registration_approval'] ? 'yes' : 'no',
+		);
+
+		// Get all pages for dropdown
+		$pages = get_pages( array( 'sort_column' => 'post_title' ) );
+		$page_options = array( '' => __( 'Select a page...', 'wholesale-powerhouse' ) );
+		foreach ( $pages as $page ) {
+			$page_options[ $page->ID ] = $page->post_title;
+		}
+
+		$settings[] = array(
+			'title'    => __( 'Registration Page', 'wholesale-powerhouse' ),
+			'desc'     => __( 'Select the page that contains the [wholesale_registration_form] shortcode', 'wholesale-powerhouse' ),
+			'id'       => 'wh_registration_page_id',
+			'type'     => 'select',
+			'options'  => $page_options,
+			'default'  => '',
+			'value'    => isset( $current_settings['registration_page_id'] ) ? $current_settings['registration_page_id'] : '',
+			'class'    => 'wc-enhanced-select',
 		);
 
 		$settings[] = array(

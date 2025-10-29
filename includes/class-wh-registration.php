@@ -148,8 +148,8 @@ class WH_Registration {
 		$user->remove_role( 'customer' ); // Remove default customer role
 
 		if ( $registration_approval ) {
-			// Pending approval - assign subscriber role temporarily
-			$user->add_role( 'subscriber' );
+			// Pending approval - keep as customer but mark as pending
+			$user->add_role( 'customer' );
 			update_user_meta( $user_id, 'wh_pending_approval', true );
 			
 			wc_add_notice(

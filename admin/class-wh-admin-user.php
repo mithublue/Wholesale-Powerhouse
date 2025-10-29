@@ -119,7 +119,8 @@ class WH_Admin_User {
 	private function approve_wholesale_customer( $user_id ) {
 		$user = new WP_User( $user_id );
 
-		// Remove subscriber role
+		// Remove customer and subscriber roles
+		$user->remove_role( 'customer' );
 		$user->remove_role( 'subscriber' );
 
 		// Add bronze wholesale role

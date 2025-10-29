@@ -28,8 +28,8 @@ class WH_Tiered_Pricing {
 	 * Register hooks
 	 */
 	private function init_hooks() {
-		// Apply tiered pricing in cart
-		add_action( 'woocommerce_before_calculate_totals', array( $this, 'apply_tiered_pricing_to_cart' ), 20 );
+		// Apply tiered pricing in cart - use higher priority to run after wholesale pricing
+		add_action( 'woocommerce_before_calculate_totals', array( $this, 'apply_tiered_pricing_to_cart' ), 100 );
 
 		// Display tiered pricing info on product pages
 		add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'display_tiered_pricing_table' ) );
@@ -55,14 +55,25 @@ class WH_Tiered_Pricing {
 		foreach ( $cart->get_cart() as $cart_item_key => $cart_item ) {
 			$product    = $cart_item['data'];
 			$product_id = $product->get_id();
-			$quantity   = $cart_item['quantity'];
-
-			// Get tiered pricing rules
-			$tier_rules = get_post_meta( $product_id, '_wh_tier_lite', true );
+			
+			// For variations, check parent product as well
+			if ( $product->is_type( 'variation' ) ) {
+				$parent_id = $product->get_parent_id();
+				$tier_rules = get_post_meta( $parent_id, '_wh_tier_lite', true );
+				
+				// If no tier rules on parent, check variation itself
+				if ( empty( $tier_rules ) || ! is_array( $tier_rules ) ) {
+					$tier_rules = get_post_meta( $product_id, '_wh_tier_lite', true );
+				}
+			} else {
+				$tier_rules = get_post_meta( $product_id, '_wh_tier_lite', true );
+			}
 
 			if ( empty( $tier_rules ) || ! is_array( $tier_rules ) ) {
 				continue;
 			}
+
+			$quantity = $cart_item['quantity'];
 
 			// Check if minimum quantity is met
 			$min_qty          = isset( $tier_rules['min_qty'] ) ? intval( $tier_rules['min_qty'] ) : 0;
@@ -74,11 +85,17 @@ class WH_Tiered_Pricing {
 
 			// Apply tier discount if quantity threshold is met
 			if ( $quantity >= $min_qty ) {
-				$current_price = $product->get_price();
-				$new_price     = $current_price - ( $current_price * ( $discount_percent / 100 ) );
+				// Get the current price (which should already be the wholesale price)
+				$current_price = floatval( $product->get_price() );
+				
+				if ( $current_price > 0 ) {
+					// Apply additional tier discount on top of wholesale price
+					$tier_discount = $current_price * ( $discount_percent / 100 );
+					$new_price     = $current_price - $tier_discount;
 
-				// Set new price
-				$product->set_price( $new_price );
+					// Set new price
+					$product->set_price( $new_price );
+				}
 			}
 		}
 	}

@@ -12,6 +12,7 @@
  * Requires PHP: 7.4
  * WC requires at least: 5.0
  * WC tested up to: 8.5
+ * Requires Plugins: woocommerce
  * License: GPLv2 or later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.html
  */
@@ -100,3 +101,12 @@ function run_wh_powerhouse() {
 	$plugin->run();
 }
 add_action( 'plugins_loaded', 'run_wh_powerhouse', 20 );
+
+/**
+ * Declare compatibility with WooCommerce HPOS (High-Performance Order Storage)
+ */
+add_action( 'before_woocommerce_init', function() {
+	if ( class_exists( \Automattic\WooCommerce\Utilities\FeaturesUtil::class ) ) {
+		\Automattic\WooCommerce\Utilities\FeaturesUtil::declare_compatibility( 'custom_order_tables', __FILE__, true );
+	}
+} );
