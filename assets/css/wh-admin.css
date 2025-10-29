@@ -1,0 +1,75 @@
+/**
+ * Wholesale Powerhouse - Admin Styles
+ * 
+ * @package    Wholesale_Powerhouse
+ * @subpackage Wholesale_Powerhouse/assets/css
+ */
+
+/* Product Edit Page - Wholesale Tab */
+#wholesale_product_data h3 {
+	margin: 0;
+	padding: 10px;
+	font-size: 14px;
+	border-bottom: 1px solid #eee;
+}
+
+#wholesale_product_data .options_group {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 15px;
+}
+
+/* User Profile - Wholesale Section */
+.wh-pending {
+	display: inline-block;
+	padding: 3px 8px;
+	background: #fff3cd;
+	border: 1px solid #ffc107;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+}
+
+/* Products List - Wholesale Column */
+.column-wholesale {
+	width: 150px;
+}
+
+.column-wholesale .dashicons-lock {
+	color: #d63638;
+	font-size: 18px;
+	vertical-align: middle;
+}
+
+/* Settings Page Enhancements */
+.woocommerce table.form-table th {
+	padding-left: 0;
+}
+
+/* Admin Notices */
+.notice.wh-notice {
+	padding: 12px;
+	border-left-width: 4px;
+}
+
+.notice.wh-notice p {
+	margin: 0.5em 0;
+}
+
+/* User Filter Dropdown */
+select#wh_role {
+	margin-left: 5px;
+	margin-right: 5px;
+	min-width: 180px;
+}
+
+/* Responsive adjustments */
+@media screen and (max-width: 782px) {
+	.column-wholesale {
+		width: auto;
+	}
+	
+	select#wh_role {
+		width: 100%;
+		margin: 5px 0;
+	}
+}

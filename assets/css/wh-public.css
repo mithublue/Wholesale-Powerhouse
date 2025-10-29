@@ -1,0 +1,220 @@
+/**
+ * Wholesale Powerhouse - Public Styles
+ * 
+ * @package    Wholesale_Powerhouse
+ * @subpackage Wholesale_Powerhouse/assets/css
+ */
+
+/* Registration Form */
+.wh-registration-form-wrapper {
+	max-width: 600px;
+	margin: 40px auto;
+	padding: 30px;
+	background: #fff;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.wh-registration-form-wrapper h2 {
+	margin-top: 0;
+	margin-bottom: 10px;
+	font-size: 28px;
+	color: #333;
+}
+
+.wh-registration-form-wrapper > p {
+	color: #666;
+	margin-bottom: 30px;
+}
+
+.wh-form-section {
+	margin-bottom: 30px;
+	padding-bottom: 20px;
+	border-bottom: 1px solid #eee;
+}
+
+.wh-form-section:last-of-type {
+	border-bottom: none;
+}
+
+.wh-form-section h3 {
+	margin: 0 0 20px 0;
+	font-size: 18px;
+	color: #555;
+}
+
+.wh-form-row {
+	margin-bottom: 20px;
+}
+
+.wh-form-row label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 600;
+	color: #333;
+	font-size: 14px;
+}
+
+.wh-form-row label .required {
+	color: #d63638;
+	font-weight: bold;
+	margin-left: 3px;
+}
+
+.wh-form-row input[type="text"],
+.wh-form-row input[type="email"],
+.wh-form-row input[type="password"] {
+	width: 100%;
+	padding: 12px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 14px;
+	transition: border-color 0.3s;
+}
+
+.wh-form-row input:focus {
+	outline: none;
+	border-color: #2271b1;
+	box-shadow: 0 0 0 1px #2271b1;
+}
+
+.wh-field-description {
+	display: block;
+	margin-top: 5px;
+	font-size: 12px;
+	color: #666;
+	font-style: italic;
+}
+
+.wh-submit-btn {
+	width: 100%;
+	padding: 15px 30px;
+	background: #2271b1;
+	color: #fff;
+	border: none;
+	border-radius: 4px;
+	font-size: 16px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background 0.3s;
+}
+
+.wh-submit-btn:hover {
+	background: #135e96;
+}
+
+.wh-form-footer {
+	margin-top: 20px;
+	padding-top: 20px;
+	border-top: 1px solid #eee;
+	text-align: center;
+}
+
+.wh-form-footer small {
+	color: #666;
+	line-height: 1.5;
+}
+
+/* Private Store Messages */
+.wh-login-required {
+	display: inline-block;
+	padding: 5px 10px;
+	background: #f0f0f1;
+	color: #666;
+	border-radius: 3px;
+	font-size: 13px;
+	font-style: italic;
+}
+
+/* Tiered Pricing Table */
+.wh-tiered-pricing-info {
+	margin: 20px 0;
+	padding: 20px;
+	background: #f7f7f7;
+	border: 1px solid #e0e0e0;
+	border-radius: 5px;
+}
+
+.wh-tiered-pricing-info h4 {
+	margin: 0 0 15px 0;
+	font-size: 16px;
+	color: #333;
+}
+
+.wh-tier-table {
+	width: 100%;
+	border-collapse: collapse;
+	background: #fff;
+	border: 1px solid #ddd;
+}
+
+.wh-tier-table thead {
+	background: #f0f0f1;
+}
+
+.wh-tier-table th,
+.wh-tier-table td {
+	padding: 12px;
+	text-align: left;
+	border: 1px solid #ddd;
+}
+
+.wh-tier-table th {
+	font-weight: 600;
+	color: #333;
+}
+
+.wh-tier-table tbody tr:hover {
+	background: #f9f9f9;
+}
+
+/* Wholesale Badge */
+.wh-wholesale-badge {
+	display: inline-block;
+	padding: 5px 12px;
+	background: #2271b1;
+	color: #fff;
+	border-radius: 3px;
+	font-size: 12px;
+	font-weight: 600;
+	margin-left: 10px;
+	text-transform: uppercase;
+}
+
+/* Responsive Design */
+@media screen and (max-width: 768px) {
+	.wh-registration-form-wrapper {
+		margin: 20px;
+		padding: 20px;
+	}
+
+	.wh-registration-form-wrapper h2 {
+		font-size: 24px;
+	}
+
+	.wh-form-section h3 {
+		font-size: 16px;
+	}
+
+	.wh-tier-table {
+		font-size: 14px;
+	}
+
+	.wh-tier-table th,
+	.wh-tier-table td {
+		padding: 8px;
+	}
+}
+
+@media screen and (max-width: 480px) {
+	.wh-registration-form-wrapper {
+		margin: 10px;
+		padding: 15px;
+	}
+
+	.wh-submit-btn {
+		padding: 12px 20px;
+		font-size: 14px;
+	}
+}
