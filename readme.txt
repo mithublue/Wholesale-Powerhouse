@@ -1,5 +1,5 @@
 === Wholesale Powerhouse ===
-Contributors: cybercraft
+Contributors: mithublue, cybercraftit
 Tags: woocommerce, wholesale, pricing, b2b, bulk pricing, tiered pricing, role management
 Requires at least: 5.8
 Tested up to: 6.4

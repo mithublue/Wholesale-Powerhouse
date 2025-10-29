@@ -4,7 +4,7 @@
 Wholesale Powerhouse transforms WooCommerce into a confident B2B sales engine with ready-made wholesale roles, gated storefronts, and profit-first pricing controls.
 
 ## Long Description
-Wholesale Powerhouse is the premium-yet-free wholesale suite crafted by the CyberCraft engineering team. It replaces clunky spreadsheets and fragile discount hacks with an elegant, class-based plugin that plugs seamlessly into WooCommerce. Launch a polished wholesale program in minutes—no custom tables, brittle scripts, or expensive SaaS fees.
+Wholesale Powerhouse is the premium-yet-free wholesale suite crafted by CyberCraft engineering team. It replaces clunky spreadsheets and fragile discount hacks with an elegant, class-based plugin that plugs seamlessly into WooCommerce. Launch a polished wholesale program in minutes—no custom tables, brittle scripts, or expensive SaaS fees.
 
 With Wholesale Powerhouse you control margins, personalize buyer journeys, and stay future-proof thanks to HPOS compatibility and extensible architecture. From boutique suppliers to enterprise distributors, thousands of merchants can now scale wholesale revenue without scaling headaches.
 
