@@ -145,11 +145,10 @@ class WH_Registration {
 
 		// Assign role based on approval setting
 		$user = new WP_User( $user_id );
-		$user->remove_role( 'customer' ); // Remove default customer role
 
 		if ( $registration_approval ) {
-			// Pending approval - keep as customer but mark as pending
-			$user->add_role( 'customer' );
+			// Pending approval - set to customer role and flag for approval
+			$user->set_role( 'customer' );
 			update_user_meta( $user_id, 'wh_pending_approval', true );
 			
 			wc_add_notice(
@@ -157,8 +156,8 @@ class WH_Registration {
 				'success'
 			);
 		} else {
-			// Auto-approve - assign Bronze role
-			$user->add_role( 'wh_bronze' );
+			// Auto-approve - assign Bronze role immediately
+			$user->set_role( 'wh_bronze' );
 			
 			wc_add_notice(
 				__( 'Registration successful! You have been assigned Bronze wholesale status.', 'wholesale-powerhouse' ),

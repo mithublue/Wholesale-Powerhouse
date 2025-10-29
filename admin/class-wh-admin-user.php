@@ -107,6 +107,8 @@ class WH_Admin_User {
 
 		// Handle approval
 		if ( isset( $_POST['wh_approve_customer'] ) && $_POST['wh_approve_customer'] === '1' ) {
+			// Force the role dropdown to bronze so WordPress core saves it correctly
+			$_POST['role'] = 'wh_bronze';
 			$this->approve_wholesale_customer( $user_id );
 		}
 	}
@@ -119,12 +121,8 @@ class WH_Admin_User {
 	private function approve_wholesale_customer( $user_id ) {
 		$user = new WP_User( $user_id );
 
-		// Remove customer and subscriber roles
-		$user->remove_role( 'customer' );
-		$user->remove_role( 'subscriber' );
-
-		// Add bronze wholesale role
-		$user->add_role( 'wh_bronze' );
+		// Assign Bronze wholesale role exclusively
+		$user->set_role( 'wh_bronze' );
 
 		// Remove pending flag
 		delete_user_meta( $user_id, 'wh_pending_approval' );
