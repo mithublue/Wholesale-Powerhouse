@@ -129,11 +129,15 @@
 
 /* Tiered Pricing Table */
 .wh-tiered-pricing-info {
-	margin: 20px 0;
+	margin: 30px 0 25px;
 	padding: 20px;
 	background: #f7f7f7;
 	border: 1px solid #e0e0e0;
 	border-radius: 5px;
+    display: inline-block;
+    width: 100%;
+    max-width: 420px;
+    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.06);
 }
 
 .wh-tiered-pricing-info h4 {
@@ -147,6 +151,7 @@
 	border-collapse: collapse;
 	background: #fff;
 	border: 1px solid #ddd;
+    margin-bottom: 0;
 }
 
 .wh-tier-table thead {
@@ -189,6 +194,10 @@
 		padding: 20px;
 	}
 
+	.wh-tiered-pricing-info {
+		max-width: 100%;
+	}
+
 	.wh-registration-form-wrapper h2 {
 		font-size: 24px;
 	}
@@ -211,6 +220,10 @@
 	.wh-registration-form-wrapper {
 		margin: 10px;
 		padding: 15px;
+	}
+
+	.wh-tiered-pricing-info {
+		margin: 25px 0 20px;
 	}
 
 	.wh-submit-btn {

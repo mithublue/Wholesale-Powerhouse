@@ -31,8 +31,8 @@ class WH_Tiered_Pricing {
 		// Apply tiered pricing in cart - use higher priority to run after wholesale pricing
 		add_action( 'woocommerce_before_calculate_totals', array( $this, 'apply_tiered_pricing_to_cart' ), 100 );
 
-		// Display tiered pricing info on product pages
-		add_action( 'woocommerce_before_add_to_cart_button', array( $this, 'display_tiered_pricing_table' ) );
+		// Display tiered pricing info on product pages (below the add to cart form)
+		add_action( 'woocommerce_after_add_to_cart_form', array( $this, 'display_tiered_pricing_table' ), 5 );
 	}
 
 	/**
