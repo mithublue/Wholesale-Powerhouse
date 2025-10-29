@@ -136,7 +136,8 @@ function wh_format_price( $price ) {
  * @param string $message Message to log
  */
 function wh_log( $message ) {
-	if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-		error_log( '[Wholesale Powerhouse] ' . $message );
+	if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'wc_get_logger' ) ) {
+		$logger = wc_get_logger();
+		$logger->debug( $message, array( 'source' => 'wholesale-powerhouse' ) );
 	}
 }

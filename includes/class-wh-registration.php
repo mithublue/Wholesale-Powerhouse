@@ -72,19 +72,19 @@ class WH_Registration {
 		}
 
 		// Verify nonce
-		if ( ! wp_verify_nonce( $_POST['wh_register_nonce'], 'wh_registration_form' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wh_register_nonce'] ) ), 'wh_registration_form' ) ) {
 			wc_add_notice( __( 'Security verification failed. Please try again.', 'wholesale-powerhouse' ), 'error' );
 			return;
 		}
 
 		// Sanitize and validate inputs
-		$username    = isset( $_POST['wh_username'] ) ? sanitize_user( $_POST['wh_username'] ) : '';
-		$email       = isset( $_POST['wh_email'] ) ? sanitize_email( $_POST['wh_email'] ) : '';
-		$password    = isset( $_POST['wh_password'] ) ? $_POST['wh_password'] : '';
-		$first_name  = isset( $_POST['wh_first_name'] ) ? sanitize_text_field( $_POST['wh_first_name'] ) : '';
-		$last_name   = isset( $_POST['wh_last_name'] ) ? sanitize_text_field( $_POST['wh_last_name'] ) : '';
-		$company     = isset( $_POST['wh_company'] ) ? sanitize_text_field( $_POST['wh_company'] ) : '';
-		$tax_id      = isset( $_POST['wh_tax_id'] ) ? sanitize_text_field( $_POST['wh_tax_id'] ) : '';
+		$username    = isset( $_POST['wh_username'] ) ? sanitize_user( wp_unslash( $_POST['wh_username'] ) ) : '';
+		$email       = isset( $_POST['wh_email'] ) ? sanitize_email( wp_unslash( $_POST['wh_email'] ) ) : '';
+		$password    = isset( $_POST['wh_password'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_password'] ) ) : '';
+		$first_name  = isset( $_POST['wh_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_first_name'] ) ) : '';
+		$last_name   = isset( $_POST['wh_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_last_name'] ) ) : '';
+		$company     = isset( $_POST['wh_company'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_company'] ) ) : '';
+		$tax_id      = isset( $_POST['wh_tax_id'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_tax_id'] ) ) : '';
 
 		// Validate required fields
 		$errors = array();
@@ -187,14 +187,12 @@ class WH_Registration {
 	 */
 	private function send_admin_notification( $user_id, $username, $email, $company ) {
 		$admin_email = get_option( 'admin_email' );
-		$subject     = sprintf( __( 'New Wholesale Registration: %s', 'wholesale-powerhouse' ), $username );
+		/* translators: %s: wholesale username. */
+		$subject = sprintf( __( 'New Wholesale Registration: %s', 'wholesale-powerhouse' ), $username );
 		
+		/* translators: 1: username, 2: email, 3: company, 4: edit user URL. */
 		$message = sprintf(
-			__( 'A new wholesale customer has registered on your site.' . "\n\n" .
-				'Username: %s' . "\n" .
-				'Email: %s' . "\n" .
-				'Company: %s' . "\n\n" .
-				'Edit user: %s', 'wholesale-powerhouse' ),
+			__( "A new wholesale customer has registered on your site.\n\nUsername: %1\$s\nEmail: %2\$s\nCompany: %3\$s\n\nEdit user: %4\$s", 'wholesale-powerhouse' ),
 			$username,
 			$email,
 			$company,

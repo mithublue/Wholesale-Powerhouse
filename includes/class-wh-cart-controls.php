@@ -61,8 +61,8 @@ class WH_Cart_Controls {
 		if ( $cart_total < $min_cart_value ) {
 			wc_add_notice(
 				sprintf(
-					/* translators: %s: minimum order value */
-					__( 'Wholesale customers must have a minimum order value of %s. Your current cart total is %s.', 'wholesale-powerhouse' ),
+					/* translators: 1: minimum order value, 2: cart total. */
+					__( 'Wholesale customers must have a minimum order value of %1$s. Your current cart total is %2$s.', 'wholesale-powerhouse' ),
 					wc_price( $min_cart_value ),
 					wc_price( $cart_total )
 				),
@@ -112,7 +112,7 @@ class WH_Cart_Controls {
 		$disable_coupons = isset( $settings['disable_coupons'] ) ? $settings['disable_coupons'] : false;
 
 		if ( $disable_coupons ) {
-			throw new Exception( __( 'Coupons are not available for wholesale customers.', 'wholesale-powerhouse' ) );
+			throw new Exception( esc_html__( 'Coupons are not available for wholesale customers.', 'wholesale-powerhouse' ) );
 		}
 
 		return $valid;

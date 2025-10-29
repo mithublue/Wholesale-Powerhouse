@@ -1,22 +1,18 @@
 === Wholesale Powerhouse ===
 Contributors: mithublue, cybercraftit
-Tags: woocommerce, wholesale, pricing, b2b, bulk pricing, tiered pricing, role management
+Tags: woocommerce, wholesale, pricing, b2b, tiered-pricing
 Requires at least: 5.8
-Tested up to: 6.4
+Tested up to: 6.8
 Requires PHP: 7.4
 Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 
-Wholesale Powerhouse turns WooCommerce into a serious B2B sales machine with effortless wholesale pricing, gated storefronts, and VIP customer experiences.
+Wholesale Powerhouse adds fast wholesale pricing, roles, tiered discounts, and private storefront controls to WooCommerce—no custom tables.
 
-== Short Description ==
+== Description ==
 
-Wholesale Powerhouse is the all-in-one WooCommerce wholesale plugin that lets you launch a revenue-driving B2B channel in minutes—no custom tables, no code, no headaches.
-
-== Long Description ==
-
-Running wholesale on WooCommerce should feel empowering, not exhausting. **Wholesale Powerhouse by CyberCraft** gives you elite-level wholesale pricing, role management, tiered discounts, and private storefront controls in a clean, class-based plugin that respects WordPress standards and your server resources.
+Running wholesale on WooCommerce should feel empowering, not exhausting. Wholesale Powerhouse gives you elite-level wholesale pricing, role management, tiered discounts, and private storefront controls in a clean, class-based plugin that respects WordPress standards and your server resources.
 
 Whether you sell to mom-and-pop retailers or multinational distributors, Wholesale Powerhouse puts you in control of margins, makes customers feel like VIPs, and future-proofs your store with modern WooCommerce compatibility (including HPOS support).
 

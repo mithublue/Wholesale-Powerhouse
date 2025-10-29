@@ -51,6 +51,7 @@ class WH_Admin_Settings {
 	public function output_settings() {
 		global $current_section;
 		$settings = $this->get_settings( $current_section );
+		wp_nonce_field( 'wh_save_settings', '_wh_settings_nonce' );
 		WC_Admin_Settings::output_fields( $settings );
 	}
 
@@ -63,11 +64,15 @@ class WH_Admin_Settings {
 		// Get settings
 		$settings = wh_get_settings();
 
+		if ( ! isset( $_POST['_wh_settings_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wh_settings_nonce'] ) ), 'wh_save_settings' ) ) {
+			return;
+		}
+
 		// Update role settings
 		$roles = array();
 		foreach ( array( 'wh_bronze', 'wh_silver', 'wh_gold' ) as $role_key ) {
-			$label    = isset( $_POST[ 'wh_role_label_' . $role_key ] ) ? sanitize_text_field( $_POST[ 'wh_role_label_' . $role_key ] ) : '';
-			$discount = isset( $_POST[ 'wh_role_discount_' . $role_key ] ) ? floatval( $_POST[ 'wh_role_discount_' . $role_key ] ) : 0;
+			$label    = isset( $_POST[ 'wh_role_label_' . $role_key ] ) ? sanitize_text_field( wp_unslash( $_POST[ 'wh_role_label_' . $role_key ] ) ) : '';
+			$discount = isset( $_POST[ 'wh_role_discount_' . $role_key ] ) ? floatval( wp_unslash( $_POST[ 'wh_role_discount_' . $role_key ] ) ) : 0;
 			
 			$roles[ $role_key ] = array(
 				'label'    => $label,
@@ -77,11 +82,11 @@ class WH_Admin_Settings {
 		$settings['roles'] = $roles;
 
 		// Update other settings
-		$settings['private_store']         = isset( $_POST['wh_private_store'] ) ? true : false;
-		$settings['min_cart_value']        = isset( $_POST['wh_min_cart_value'] ) ? floatval( $_POST['wh_min_cart_value'] ) : 0;
-		$settings['disable_coupons']       = isset( $_POST['wh_disable_coupons'] ) ? true : false;
-		$settings['registration_approval'] = isset( $_POST['wh_registration_approval'] ) ? true : false;
-		$settings['registration_page_id']  = isset( $_POST['wh_registration_page_id'] ) ? intval( $_POST['wh_registration_page_id'] ) : 0;
+		$settings['private_store']         = isset( $_POST['wh_private_store'] );
+		$settings['min_cart_value']        = isset( $_POST['wh_min_cart_value'] ) ? floatval( wp_unslash( $_POST['wh_min_cart_value'] ) ) : 0;
+		$settings['disable_coupons']       = isset( $_POST['wh_disable_coupons'] );
+		$settings['registration_approval'] = isset( $_POST['wh_registration_approval'] );
+		$settings['registration_page_id']  = isset( $_POST['wh_registration_page_id'] ) ? absint( wp_unslash( $_POST['wh_registration_page_id'] ) ) : 0;
 
 		// Save settings
 		update_option( 'wholesale_powerhouse_settings', $settings );

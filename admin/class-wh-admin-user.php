@@ -66,6 +66,7 @@ class WH_Admin_User {
 		?>
 		<h2><?php esc_html_e( 'Wholesale Information', 'wholesale-powerhouse' ); ?></h2>
 		<table class="form-table">
+			<?php wp_nonce_field( 'wh_save_user_fields', '_wh_user_nonce' ); ?>
 			<tr>
 				<th><label for="wh_tax_id"><?php esc_html_e( 'Tax/Business ID', 'wholesale-powerhouse' ); ?></label></th>
 				<td>
@@ -100,9 +101,13 @@ class WH_Admin_User {
 			return false;
 		}
 
+		if ( ! isset( $_POST['_wh_user_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wh_user_nonce'] ) ), 'wh_save_user_fields' ) ) {
+			return false;
+		}
+
 		// Save tax ID
 		if ( isset( $_POST['wh_tax_id'] ) ) {
-			update_user_meta( $user_id, 'wh_tax_id', sanitize_text_field( $_POST['wh_tax_id'] ) );
+			update_user_meta( $user_id, 'wh_tax_id', sanitize_text_field( wp_unslash( $_POST['wh_tax_id'] ) ) );
 		}
 
 		// Handle approval
@@ -129,11 +134,10 @@ class WH_Admin_User {
 
 		// Send approval email to customer
 		$user_email = $user->user_email;
-		$subject    = __( 'Your Wholesale Account Has Been Approved', 'wholesale-powerhouse' );
-		$message    = sprintf(
-			__( 'Hello %s,' . "\n\n" .
-				'Your wholesale account has been approved! You now have Bronze wholesale access.' . "\n\n" .
-				'You can log in here: %s', 'wholesale-powerhouse' ),
+		$subject = __( 'Your Wholesale Account Has Been Approved', 'wholesale-powerhouse' );
+		/* translators: 1: customer display name, 2: login URL. */
+		$message = sprintf(
+			__( "Hello %1\$s,\n\nYour wholesale account has been approved! You now have Bronze wholesale access.\n\nYou can log in here: %2\$s", 'wholesale-powerhouse' ),
 			$user->display_name,
 			wp_login_url()
 		);
@@ -181,14 +185,17 @@ class WH_Admin_User {
 			return '<strong>' . esc_html( $label ) . '</strong>';
 		}
 
-		return '—';
+		return esc_html__( '—', 'wholesale-powerhouse' );
 	}
 
 	/**
 	 * Add wholesale role filter to users list
 	 */
 	public function add_wholesale_role_filter() {
-		$current_role = isset( $_GET['wh_role'] ) ? $_GET['wh_role'] : '';
+		$current_role = filter_input( INPUT_GET, 'wh_role', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
+        if ( null === $current_role ) {
+            $current_role = '';
+        }
 
 		echo '<select name="wh_role" id="wh_role" style="float: none;">';
 		echo '<option value="">' . esc_html__( 'All Wholesale Roles', 'wholesale-powerhouse' ) . '</option>';
@@ -197,13 +204,24 @@ class WH_Admin_User {
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {
-			$label    = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
-			$selected = selected( $current_role, $role_key, false );
-			echo '<option value="' . esc_attr( $role_key ) . '"' . $selected . '>' . esc_html( $label ) . '</option>';
+			$label = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
+			printf(
+				'<option value="%1$s"%2$s>%3$s</option>',
+				esc_attr( $role_key ),
+				selected( $current_role, $role_key, false ),
+				esc_html( $label )
+			);
 		}
 
-		echo '<option value="pending"' . selected( $current_role, 'pending', false ) . '>' . esc_html__( 'Pending Approval', 'wholesale-powerhouse' ) . '</option>';
+		printf(
+			'<option value="pending"%1$s>%2$s</option>',
+			selected( $current_role, 'pending', false ),
+			esc_html__( 'Pending Approval', 'wholesale-powerhouse' )
+		);
 		echo '</select>';
+
+		// Nonce to accompany the users filter submission
+		wp_nonce_field( 'wh_users_filter', '_wh_users_filter_nonce' );
 	}
 
 	/**
@@ -214,11 +232,20 @@ class WH_Admin_User {
 	public function filter_users_by_wholesale_role( $query ) {
 		global $pagenow;
 
-		if ( $pagenow !== 'users.php' || ! isset( $_GET['wh_role'] ) || empty( $_GET['wh_role'] ) ) {
-			return;
-		}
+		        $requested_role = filter_input( INPUT_GET, 'wh_role', FILTER_UNSAFE_RAW );
+        $nonce_value    = filter_input( INPUT_GET, '_wh_users_filter_nonce', FILTER_UNSAFE_RAW );
 
-		$wh_role = sanitize_text_field( $_GET['wh_role'] );
+        if ( $pagenow !== 'users.php' || empty( $requested_role ) ) {
+            return;
+        }
+
+        // Verify nonce from the users filter form; bail if missing/invalid.
+        if ( ! $nonce_value || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $nonce_value ) ), 'wh_users_filter' ) ) {
+            return;
+        }
+
+		        $wh_role_raw = $requested_role;
+        $wh_role     = sanitize_text_field( wp_unslash( $wh_role_raw ) );
 
 		if ( $wh_role === 'pending' ) {
 			// Filter by pending approval
@@ -241,7 +268,8 @@ class WH_Admin_User {
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {
-			$label                              = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
+			$label = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
+			/* translators: %s: Wholesale role label. */
 			$actions[ 'wh_assign_' . $role_key ] = sprintf( __( 'Assign %s Role', 'wholesale-powerhouse' ), $label );
 		}
 

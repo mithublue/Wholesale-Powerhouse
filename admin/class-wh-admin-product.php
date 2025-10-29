@@ -65,6 +65,9 @@ class WH_Admin_Product {
 
 		echo '<div id="wholesale_product_data" class="panel woocommerce_options_panel">';
 
+		// Nonce for wholesale product data
+		wp_nonce_field( 'wh_save_wholesale_product', '_wh_wholesale_nonce' );
+
 		echo '<div class="options_group">';
 
 		// Get wholesale roles
@@ -78,13 +81,15 @@ class WH_Admin_Product {
 		foreach ( $roles as $role_key => $role_data ) {
 			$role_label = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
 			
+			/* translators: %s: Wholesale role label. */
+			$fixed_price_desc = sprintf( __( 'Fixed price for %s customers', 'wholesale-powerhouse' ), $role_label );
 			woocommerce_wp_text_input(
 				array(
 					'id'          => '_wh_price_' . $role_key,
 					'label'       => $role_label . ' ' . __( 'Price', 'wholesale-powerhouse' ),
 					'placeholder' => __( 'Leave empty for global discount', 'wholesale-powerhouse' ),
 					'desc_tip'    => true,
-					'description' => sprintf( __( 'Fixed price for %s customers', 'wholesale-powerhouse' ), $role_label ),
+					'description' => $fixed_price_desc,
 					'type'        => 'number',
 					'custom_attributes' => array(
 						'step' => '0.01',
@@ -164,6 +169,15 @@ class WH_Admin_Product {
 	 * @param int $post_id Product ID
 	 */
 	public function save_wholesale_product_fields( $post_id ) {
+		if ( ! isset( $_POST['_wh_wholesale_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wh_wholesale_nonce'] ) ), 'wh_save_wholesale_product' ) ) {
+			return;
+		}
+
+		$posted = filter_input_array( INPUT_POST, FILTER_UNSAFE_RAW );
+		if ( null === $posted ) {
+			$posted = array();
+		}
+
 		// Get wholesale roles
 		$settings = wh_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
@@ -172,9 +186,15 @@ class WH_Admin_Product {
 		foreach ( $roles as $role_key => $role_data ) {
 			$field_key = '_wh_price_' . $role_key;
 			
-			if ( isset( $_POST[ $field_key ] ) ) {
-				$value = sanitize_text_field( $_POST[ $field_key ] );
-				update_post_meta( $post_id, $field_key, $value );
+			if ( isset( $posted[ $field_key ] ) ) {
+				$value_raw          = wp_unslash( $posted[ $field_key ] );
+				$value_raw_sanitized = sanitize_text_field( $value_raw );
+				if ( '' !== trim( $value_raw_sanitized ) ) {
+					$value = wc_format_decimal( $value_raw_sanitized );
+					update_post_meta( $post_id, $field_key, $value );
+				} else {
+					delete_post_meta( $post_id, $field_key );
+				}
 			} else {
 				delete_post_meta( $post_id, $field_key );
 			}
@@ -182,8 +202,8 @@ class WH_Admin_Product {
 
 		// Save tiered pricing
 		$tier_lite = array(
-			'min_qty'          => isset( $_POST['_wh_tier_min_qty'] ) ? intval( $_POST['_wh_tier_min_qty'] ) : 0,
-			'discount_percent' => isset( $_POST['_wh_tier_discount_percent'] ) ? floatval( $_POST['_wh_tier_discount_percent'] ) : 0,
+			'min_qty'          => isset( $posted['_wh_tier_min_qty'] ) ? absint( wp_unslash( $posted['_wh_tier_min_qty'] ) ) : 0,
+			'discount_percent' => isset( $posted['_wh_tier_discount_percent'] ) ? floatval( wp_unslash( $posted['_wh_tier_discount_percent'] ) ) : 0,
 		);
 
 		// Only save if both values are set
@@ -194,7 +214,7 @@ class WH_Admin_Product {
 		}
 
 		// Save visibility setting
-		$hide_from_retail = isset( $_POST['_wh_hide_from_retail'] ) ? 'yes' : 'no';
+		$hide_from_retail = isset( $posted['_wh_hide_from_retail'] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, '_wh_hide_from_retail', $hide_from_retail === 'yes' ? '1' : '0' );
 	}
 
@@ -243,9 +263,9 @@ class WH_Admin_Product {
 
 		foreach ( $roles as $role_key => $role_data ) {
 			$fixed_price = get_post_meta( $post_id, '_wh_price_' . $role_key, true );
-			if ( $fixed_price !== '' && $fixed_price !== false ) {
+			if ( '' !== $fixed_price && false !== $fixed_price ) {
 				$role_label = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
-				$output[]   = '<strong>' . esc_html( $role_label ) . ':</strong> ' . wc_price( $fixed_price );
+				$output[]   = sprintf( '<strong>%1$s:</strong> %2$s', esc_html( $role_label ), wc_price( $fixed_price ) );
 			}
 		}
 
@@ -255,6 +275,6 @@ class WH_Admin_Product {
 			$output[] = '<span class="dashicons dashicons-lock" title="' . esc_attr__( 'Wholesale Only', 'wholesale-powerhouse' ) . '"></span>';
 		}
 
-		echo ! empty( $output ) ? implode( '<br>', $output ) : '—';
+		echo ! empty( $output ) ? wp_kses_post( implode( '<br>', $output ) ) : esc_html__( '—', 'wholesale-powerhouse' );
 	}
 }

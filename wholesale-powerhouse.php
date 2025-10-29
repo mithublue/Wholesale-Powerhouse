@@ -1,11 +1,11 @@
 <?php
 /**
- * Plugin Name: Wholesale Powerhouse by CyberCraft
+ * Plugin Name: Wholesale Powerhouse
  * Plugin URI:
  * Description: A powerful, flexible wholesale pricing and user role system for WooCommerce. No custom tables - uses WP/WC meta exclusively.
  * Version: 1.0.0
  * Author: Mithu A Quayium
- * Author URI: https://cybercraftit.com/
+ * Author URI: https://profiles.wordpress.org/mithublue/
  * Text Domain: wholesale-powerhouse
  * Domain Path: /languages
  * Requires at least: 5.8
@@ -75,14 +75,6 @@ function deactivate_wh_powerhouse() {
 
 register_activation_hook( __FILE__, 'activate_wh_powerhouse' );
 register_deactivation_hook( __FILE__, 'deactivate_wh_powerhouse' );
-
-/**
- * Load plugin text domain for translations
- */
-function wh_powerhouse_load_textdomain() {
-	load_plugin_textdomain( 'wholesale-powerhouse', false, dirname( WH_POWERHOUSE_PLUGIN_BASENAME ) . '/languages' );
-}
-add_action( 'plugins_loaded', 'wh_powerhouse_load_textdomain' );
 
 /**
  * Begin execution of the plugin.

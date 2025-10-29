@@ -95,11 +95,38 @@ class WH_Install {
 
 		// Check if a page with this title already exists
 		$page_title = __( 'Wholesale Registration Form', 'wholesale-powerhouse' );
-		$existing_page = get_page_by_title( $page_title, OBJECT, 'page' );
+		$slug       = sanitize_title( $page_title );
+		$page_id   = 0;
 
-		if ( $existing_page && $existing_page->post_status === 'publish' ) {
-			// Page exists, just update the setting
-			$settings['registration_page_id'] = $existing_page->ID;
+		$existing_by_path = get_page_by_path( $slug, OBJECT, 'page' );
+		if ( $existing_by_path && 'publish' === $existing_by_path->post_status ) {
+			$page_id = $existing_by_path->ID;
+		} else {
+			$page_query = new WP_Query(
+				array(
+					'post_type'      => 'page',
+					'post_status'    => array( 'publish', 'pending', 'draft', 'future', 'private' ),
+					'posts_per_page' => -1,
+					'fields'         => 'ids',
+					's'              => $page_title,
+					'no_found_rows'  => true,
+				)
+			);
+
+			if ( $page_query->have_posts() ) {
+				foreach ( $page_query->posts as $maybe_page_id ) {
+					if ( strtolower( $page_title ) === strtolower( get_the_title( $maybe_page_id ) ) ) {
+						$page_id = $maybe_page_id;
+						break;
+					}
+				}
+			}
+
+			wp_reset_postdata();
+		}
+
+		if ( $page_id ) {
+			$settings['registration_page_id'] = $page_id;
 			update_option( 'wholesale_powerhouse_settings', $settings );
 			return;
 		}

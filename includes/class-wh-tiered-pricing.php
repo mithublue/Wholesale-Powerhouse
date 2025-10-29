@@ -148,7 +148,7 @@ class WH_Tiered_Pricing {
 					<tr>
 						<td><?php echo esc_html( $min_qty ); ?>+</td>
 						<td><?php echo esc_html( $discount_percent ); ?>%</td>
-						<td><?php echo wc_price( $tiered_price ); ?></td>
+						<td><?php echo wp_kses_post( wc_price( $tiered_price ) ); ?></td>
 					</tr>
 				</tbody>
 			</table>
