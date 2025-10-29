@@ -43,7 +43,6 @@ Wholesale Powerhouse anticipates your B2B needs:
 6. **Invite Buyers** – Share the auto-generated Wholesale Registration page or drop the `[wholesale_registration_form]` shortcode into any page.
 
 ## Irresistible Extras
-- **Zero Cash Burn** – 100% open-source and free forever.
 - **Automation Ready** – Plays nicely with WooCommerce extensions, CRMs, and custom workflows.
 - **Silicon Valley Engineering** – Built by CyberCraft, a team obsessed with quality, security, and performance.
 - **Loved by Merchants** – Designed alongside real wholesale businesses that needed power without complexity.

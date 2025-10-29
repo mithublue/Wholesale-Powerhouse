@@ -66,7 +66,6 @@ This is the wholesale toolkit you hoped existed when you launched WooCommerce—
 * __Beautiful UX__: Styled registration forms and tiered pricing tables build trust instantly.
 * __Automation Ready__: Works with WooCommerce extensions, action schedulers, and popular CRMs via webhooks.
 * __Reliable Support__: Crafted by CyberCraft, a Silicon Valley-grade engineering team obsessed with performance.
-* __Zero Cash Burn__: 100% open-source and free—scale your wholesale business without subscription fatigue.
 
 == Frequently Asked Questions ==
 
