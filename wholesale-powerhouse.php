@@ -13,8 +13,8 @@
  * WC requires at least: 5.0
  * WC tested up to: 8.5
  * Requires Plugins: woocommerce
- * License: GPLv2 or later
- * License URI: http://www.gnu.org/licenses/gpl-2.0.html
+ * License: GPLv3 or later
+ * License URI: http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 // If this file is called directly, abort.
