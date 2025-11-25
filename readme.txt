@@ -12,82 +12,79 @@ Wholesale Powerhouse adds fast wholesale pricing, roles, tiered discounts, and p
 
 == Description ==
 
-Running wholesale on WooCommerce should feel empowering, not exhausting. Wholesale Powerhouse gives you elite-level wholesale pricing, role management, tiered discounts, and private storefront controls in a clean, class-based plugin that respects WordPress standards and your server resources.
+Wholesale Powerhouse provides wholesale pricing, role management, tiered discounts, and private storefront controls for WooCommerce. The plugin is designed to help store owners manage wholesale operations efficiently using WordPress and WooCommerce's native meta APIs.
 
-Whether you sell to mom-and-pop retailers or multinational distributors, Wholesale Powerhouse puts you in control of margins, makes customers feel like VIPs, and future-proofs your store with modern WooCommerce compatibility (including HPOS support).
+The plugin includes three pre-configured wholesale user roles (Bronze, Silver, and Gold) with customizable discount levels. Store owners can choose between product-level fixed prices or global percentage discounts per role. The plugin supports quantity-based tiered pricing to encourage bulk purchases.
+
+Key capabilities include hiding prices from non-logged-in visitors, restricting specific products to wholesale customers, setting minimum order values, and managing wholesale customer registrations through a frontend form. The plugin is compatible with WooCommerce High-Performance Order Storage (HPOS).
 
 == Features ==
 
-* __Three Ready-to-Sell Roles__: Bronze, Silver, and Gold roles ship with attractive default discounts and are fully editable.
-* __Dual Pricing Engine__: Choose between product-level fixed wholesale prices or automatic global discounts per role.
-* __Tiered Pricing Lite__: Reward bulk buyers instantly—set quantity thresholds and additional discounts in seconds.
-* __Private Store Mode__: Hide pricing and add-to-cart buttons from guests while still showing off your catalog.
-* __Wholesale-Only Products__: Flag products that should never appear for retail customers.
-* __Cart Controls__: Enforce minimum order values and disable coupons for wholesale buyers when necessary.
-* __Frictionless Registration__: Offer a beautiful frontend form, manual approvals, and auto-role assignment with a single shortcode.
-* __Admin Delight__: Manage settings, product pricing, and user approvals through intuitive WooCommerce interfaces.
-* __Built for Speed__: No custom tables or bloated options—just efficient use of WordPress and WooCommerce meta APIs.
+* __Three Wholesale Roles__: Includes Bronze, Silver, and Gold customer roles, each with configurable discount percentages that can be customized to match your business needs.
+* __Flexible Pricing Options__: Choose between setting fixed wholesale prices for individual products or applying automatic percentage discounts globally based on customer role.
+* __Quantity-Based Discounts__: Configure tiered pricing to offer additional discounts when customers purchase in larger quantities, helping to incentivize bulk orders.
+* __Private Store Mode__: Option to hide product prices and purchase buttons from visitors who are not logged in, creating a members-only shopping experience.
+* __Product Visibility Control__: Mark specific products as wholesale-only, making them visible exclusively to wholesale customers while hiding them from retail shoppers.
+* __Order Management__: Set minimum order values for wholesale purchases and choose whether to allow or disable coupon usage for wholesale customers.
+* __Customer Registration__: Includes a frontend registration form that can be added to any page via shortcode, with options for manual approval of new wholesale customers.
+* __WooCommerce Integration__: Settings are integrated into the WooCommerce settings panel, and product pricing options appear in the product edit screen.
+* __Lightweight Architecture__: Built using WordPress and WooCommerce's native meta storage, avoiding the need for custom database tables.
 
-== Promising Features ==
+== Additional Capabilities ==
 
-* __Instant Launch Page__: Activation creates a polished "Wholesale Registration Form" page and links it to settings automatically.
-* __HPOS Compatible__: Ready for WooCommerce High-Performance Order Storage out of the box.
-* __Bulk Role Assignment__: Update entire customer lists with one action and keep approvals organized.
-* __Tiered Pricing Visibility__: Elegant tables display available discounts exactly where wholesale buyers expect them.
-* __Developer Friendly__: Modular OOP architecture, hooks, filters, and translation-ready strings invite customization.
+* __Automatic Page Creation__: Creates a wholesale registration page automatically upon activation, which can be customized as needed.
+* __HPOS Support__: Fully compatible with WooCommerce's High-Performance Order Storage system for improved scalability.
+* __Bulk User Management__: Assign or change wholesale roles for multiple users simultaneously from the WordPress users screen.
+* __Pricing Transparency__: Displays tiered pricing tables on product pages so wholesale customers can see available discounts at different quantity levels.
+* __Extensible Design__: Built with an object-oriented architecture that includes hooks and filters, allowing developers to extend functionality as needed.
 
-== Why This Plugin Is More Than What You Want ==
+== Installation ==
 
-Wholesale Powerhouse doesn’t just meet your wholesale requirements—it anticipates them. You get:
+1. Ensure WooCommerce is installed and active.
+2. Upload the plugin files to `/wp-content/plugins/wholesale-powerhouse/` or install through the WordPress plugins screen.
+3. Activate the plugin through the 'Plugins' screen in WordPress.
+4. Navigate to WooCommerce > Settings > Wholesale to configure roles and discounts.
+5. Edit products to set wholesale pricing in the "Wholesale" tab.
+6. Use the `[wholesale_registration_form]` shortcode to display the registration form.
 
-* __Enterprise polish without enterprise cost__
-* __Role-driven marketing opportunities__ thanks to tailored discounts and store visibility controls
-* __Future-proofing__ with HPOS compatibility and class-based extensibility
-* __Peace of mind__ knowing no custom tables or risky database migrations are involved
-* __A concierge experience__ for wholesale buyers who enjoy premium pricing, instant tiered discounts, and a seamless self-service portal
+== What This Plugin Helps You Achieve ==
 
-This is the wholesale toolkit you hoped existed when you launched WooCommerce—and now it does.
+This plugin is designed to help WooCommerce store owners:
 
-== How to Install and Activate ==
+* Manage multiple wholesale customer tiers with different pricing levels
+* Offer quantity-based discounts to encourage larger orders
+* Control store visibility and access for different customer types
+* Streamline wholesale customer registration and approval processes
+* Maintain pricing flexibility with both fixed and percentage-based discounts
+* Operate without additional database tables, keeping the site structure clean
 
-1. __Prepare__: Ensure WooCommerce is installed, active, and ready to sell.
-2. __Upload__: Install `wholesale-powerhouse.zip` through Plugins > Add New > Upload, or drop the folder into `wp-content/plugins/`.
-3. __Activate__: Locate "Wholesale Powerhouse by CyberCraft" in the Plugins list and click Activate.
-4. __Configure__: Visit WooCommerce > Settings > Wholesale to customize roles, discounts, and store visibility.
-5. __Price Products__: Edit any product and open the "Wholesale" tab to set fixed prices, tiered rules, and visibility options.
-6. __Invite Customers__: Share the auto-created Wholesale Registration page or embed the `[wholesale_registration_form]` shortcode anywhere on your site.
-
-== Extra Reasons Customers Love It ==
-
-* __Beautiful UX__: Styled registration forms and tiered pricing tables build trust instantly.
-* __Automation Ready__: Works with WooCommerce extensions, action schedulers, and popular CRMs via webhooks.
-* __Reliable Support__: Crafted by CyberCraft, a Silicon Valley-grade engineering team obsessed with performance.
+The plugin uses WordPress and WooCommerce's built-in systems, which can help with site maintenance and compatibility with other plugins.
 
 == Frequently Asked Questions ==
 
 = Do I need WooCommerce? =
-Yes. Wholesale Powerhouse extends WooCommerce, so you’ll need it active first.
+Yes. This plugin requires WooCommerce to be installed and active.
 
-= Does the plugin touch my database structure? =
-Never. We rely on `wp_options` and `wp_postmeta`, keeping migrations light and backups simple.
+= Does the plugin modify the database structure? =
+No. The plugin uses WordPress options and post meta tables without creating custom tables.
 
 = Can I rename the Bronze, Silver, and Gold roles? =
-Absolutely—head to WooCommerce > Settings > Wholesale to tailor labels and discounts.
+Yes. Navigate to WooCommerce > Settings > Wholesale to customize role labels and discounts.
 
 = How does pricing priority work? =
 1. Product-specific fixed price
-2. Tiered discount (if quantity is met)
+2. Tiered discount (if quantity threshold is met)
 3. Global role discount
 4. Regular/sale price fallback
 
 = Can wholesale customers use coupons? =
-Only if you want them to. Toggle coupon usage per role in settings.
+Coupon usage can be enabled or disabled per role in the settings.
 
 = Is it translation ready? =
-Yes. A `.pot` file is included under `languages/` for easy localization.
+Yes. A `.pot` file is included in the `languages/` directory.
 
 = Does it work with variable and simple products? =
-Yes, both product types—including variations—respect wholesale logic.
+Yes. Both product types and variations support wholesale pricing.
 
 == Screenshots ==
 
@@ -113,8 +110,5 @@ Yes, both product types—including variations—respect wholesale logic.
 == Upgrade Notice ==
 
 = 1.0.0 =
-Welcome to Wholesale Powerhouse—activate now to unlock a full B2B sales suite in WooCommerce.
+Initial release with wholesale pricing, role management, and tiered discounts.
 
-== Support & Credits ==
-
-Crafted with care by the CyberCraft engineering team. Need help or want bespoke features? Reach out via our support channels and join thousands of merchants transforming wholesale relationships with Wholesale Powerhouse.
