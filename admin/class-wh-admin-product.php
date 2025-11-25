@@ -109,6 +109,9 @@ class WH_Admin_Product {
 		$tier_lite = get_post_meta( $post->ID, '_wh_tier_lite', true );
 		if ( ! is_array( $tier_lite ) ) {
 			$tier_lite = array( 'min_qty' => '', 'discount_percent' => '' );
+		} else {
+			// Sanitize array values from database
+			$tier_lite = array_map( 'sanitize_text_field', $tier_lite );
 		}
 
 		woocommerce_wp_text_input(
@@ -173,10 +176,6 @@ class WH_Admin_Product {
 			return;
 		}
 
-		$posted = filter_input_array( INPUT_POST, FILTER_UNSAFE_RAW );
-		if ( null === $posted ) {
-			$posted = array();
-		}
 
 		// Get wholesale roles
 		$settings = wh_get_settings();
@@ -186,8 +185,8 @@ class WH_Admin_Product {
 		foreach ( $roles as $role_key => $role_data ) {
 			$field_key = '_wh_price_' . $role_key;
 			
-			if ( isset( $posted[ $field_key ] ) ) {
-				$value_raw          = wp_unslash( $posted[ $field_key ] );
+			if ( isset( $_POST[ $field_key ] ) ) {
+				$value_raw          = wp_unslash( $_POST[ $field_key ] );
 				$value_raw_sanitized = sanitize_text_field( $value_raw );
 				if ( '' !== trim( $value_raw_sanitized ) ) {
 					$value = wc_format_decimal( $value_raw_sanitized );
@@ -202,8 +201,8 @@ class WH_Admin_Product {
 
 		// Save tiered pricing
 		$tier_lite = array(
-			'min_qty'          => isset( $posted['_wh_tier_min_qty'] ) ? absint( wp_unslash( $posted['_wh_tier_min_qty'] ) ) : 0,
-			'discount_percent' => isset( $posted['_wh_tier_discount_percent'] ) ? floatval( wp_unslash( $posted['_wh_tier_discount_percent'] ) ) : 0,
+			'min_qty'          => isset( $_POST['_wh_tier_min_qty'] ) ? absint( wp_unslash( $_POST['_wh_tier_min_qty'] ) ) : 0,
+			'discount_percent' => isset( $_POST['_wh_tier_discount_percent'] ) ? floatval( wp_unslash( $_POST['_wh_tier_discount_percent'] ) ) : 0,
 		);
 
 		// Only save if both values are set
@@ -214,7 +213,7 @@ class WH_Admin_Product {
 		}
 
 		// Save visibility setting
-		$hide_from_retail = isset( $posted['_wh_hide_from_retail'] ) ? 'yes' : 'no';
+		$hide_from_retail = isset( $_POST['_wh_hide_from_retail'] ) ? 'yes' : 'no';
 		update_post_meta( $post_id, '_wh_hide_from_retail', $hide_from_retail === 'yes' ? '1' : '0' );
 	}
 
@@ -262,7 +261,7 @@ class WH_Admin_Product {
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {
-			$fixed_price = get_post_meta( $post_id, '_wh_price_' . $role_key, true );
+			$fixed_price = sanitize_text_field( get_post_meta( $post_id, '_wh_price_' . $role_key, true ) );
 			if ( '' !== $fixed_price && false !== $fixed_price ) {
 				$role_label = isset( $role_data['label'] ) ? $role_data['label'] : ucfirst( str_replace( 'wh_', '', $role_key ) );
 				$output[]   = sprintf( '<strong>%1$s:</strong> %2$s', esc_html( $role_label ), wc_price( $fixed_price ) );
@@ -270,7 +269,7 @@ class WH_Admin_Product {
 		}
 
 		// Check for wholesale-only flag
-		$hide_from_retail = get_post_meta( $post_id, '_wh_hide_from_retail', true );
+		$hide_from_retail = sanitize_text_field( get_post_meta( $post_id, '_wh_hide_from_retail', true ) );
 		if ( $hide_from_retail === '1' ) {
 			$output[] = '<span class="dashicons dashicons-lock" title="' . esc_attr__( 'Wholesale Only', 'wholesale-powerhouse' ) . '"></span>';
 		}

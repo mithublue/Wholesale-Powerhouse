@@ -80,7 +80,7 @@ class WH_Registration {
 		// Sanitize and validate inputs
 		$username    = isset( $_POST['wh_username'] ) ? sanitize_user( wp_unslash( $_POST['wh_username'] ) ) : '';
 		$email       = isset( $_POST['wh_email'] ) ? sanitize_email( wp_unslash( $_POST['wh_email'] ) ) : '';
-		$password    = isset( $_POST['wh_password'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_password'] ) ) : '';
+		$password    = isset( $_POST['wh_password'] ) ? wp_unslash( $_POST['wh_password'] ) : ''; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords should not be sanitized
 		$first_name  = isset( $_POST['wh_first_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_first_name'] ) ) : '';
 		$last_name   = isset( $_POST['wh_last_name'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_last_name'] ) ) : '';
 		$company     = isset( $_POST['wh_company'] ) ? sanitize_text_field( wp_unslash( $_POST['wh_company'] ) ) : '';

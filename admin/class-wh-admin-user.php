@@ -60,8 +60,8 @@ class WH_Admin_User {
 			return;
 		}
 
-		$pending_approval = get_user_meta( $user->ID, 'wh_pending_approval', true );
-		$tax_id           = get_user_meta( $user->ID, 'wh_tax_id', true );
+		$pending_approval = (bool) get_user_meta( $user->ID, 'wh_pending_approval', true );
+		$tax_id           = sanitize_text_field( get_user_meta( $user->ID, 'wh_tax_id', true ) );
 
 		?>
 		<h2><?php esc_html_e( 'Wholesale Information', 'wholesale-powerhouse' ); ?></h2>
@@ -111,7 +111,7 @@ class WH_Admin_User {
 		}
 
 		// Handle approval
-		if ( isset( $_POST['wh_approve_customer'] ) && $_POST['wh_approve_customer'] === '1' ) {
+		if ( isset( $_POST['wh_approve_customer'] ) && '1' === sanitize_text_field( wp_unslash( $_POST['wh_approve_customer'] ) ) ) {
 			// Force the role dropdown to bronze so WordPress core saves it correctly
 			$_POST['role'] = 'wh_bronze';
 			$this->approve_wholesale_customer( $user_id );
@@ -171,7 +171,7 @@ class WH_Admin_User {
 
 		$user             = get_userdata( $user_id );
 		$wholesale_role   = WH_Roles::get_user_wholesale_role( $user_id );
-		$pending_approval = get_user_meta( $user_id, 'wh_pending_approval', true );
+		$pending_approval = (bool) get_user_meta( $user_id, 'wh_pending_approval', true );
 
 		if ( $pending_approval ) {
 			return '<span class="wh-pending" style="color: orange;">' . esc_html__( 'Pending Approval', 'wholesale-powerhouse' ) . '</span>';
@@ -192,10 +192,7 @@ class WH_Admin_User {
 	 * Add wholesale role filter to users list
 	 */
 	public function add_wholesale_role_filter() {
-		$current_role = filter_input( INPUT_GET, 'wh_role', FILTER_SANITIZE_FULL_SPECIAL_CHARS );
-        if ( null === $current_role ) {
-            $current_role = '';
-        }
+		$current_role = isset( $_GET['wh_role'] ) ? sanitize_text_field( wp_unslash( $_GET['wh_role'] ) ) : '';
 
 		echo '<select name="wh_role" id="wh_role" style="float: none;">';
 		echo '<option value="">' . esc_html__( 'All Wholesale Roles', 'wholesale-powerhouse' ) . '</option>';
@@ -232,20 +229,19 @@ class WH_Admin_User {
 	public function filter_users_by_wholesale_role( $query ) {
 		global $pagenow;
 
-		        $requested_role = filter_input( INPUT_GET, 'wh_role', FILTER_UNSAFE_RAW );
-        $nonce_value    = filter_input( INPUT_GET, '_wh_users_filter_nonce', FILTER_UNSAFE_RAW );
+		$requested_role = isset( $_GET['wh_role'] ) ? sanitize_text_field( wp_unslash( $_GET['wh_role'] ) ) : '';
+        $nonce_value    = isset( $_GET['_wh_users_filter_nonce'] ) ? sanitize_text_field( wp_unslash( $_GET['_wh_users_filter_nonce'] ) ) : '';
 
         if ( $pagenow !== 'users.php' || empty( $requested_role ) ) {
             return;
         }
 
         // Verify nonce from the users filter form; bail if missing/invalid.
-        if ( ! $nonce_value || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $nonce_value ) ), 'wh_users_filter' ) ) {
+        if ( ! $nonce_value || ! wp_verify_nonce( $nonce_value, 'wh_users_filter' ) ) {
             return;
         }
 
-		        $wh_role_raw = $requested_role;
-        $wh_role     = sanitize_text_field( wp_unslash( $wh_role_raw ) );
+        $wh_role = $requested_role;
 
 		if ( $wh_role === 'pending' ) {
 			// Filter by pending approval
