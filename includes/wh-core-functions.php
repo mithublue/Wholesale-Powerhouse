@@ -16,7 +16,7 @@ if ( ! defined( 'WPINC' ) ) {
  *
  * @return array
  */
-function wh_get_settings() {
+function wholpo_get_settings() {
 	$defaults = array(
 		'roles'                 => array(),
 		'private_store'         => false,
@@ -25,7 +25,7 @@ function wh_get_settings() {
 		'registration_approval' => false,
 	);
 
-	$settings = get_option( 'wholesale_powerhouse_settings', $defaults );
+	$settings = get_option( 'wholpo_settings', $defaults );
 
 	return wp_parse_args( $settings, $defaults );
 }
@@ -37,8 +37,8 @@ function wh_get_settings() {
  * @param mixed  $default Default value
  * @return mixed
  */
-function wh_get_setting( $key, $default = null ) {
-	$settings = wh_get_settings();
+function wholpo_get_setting( $key, $default = null ) {
+	$settings = wholpo_get_settings();
 
 	return isset( $settings[ $key ] ) ? $settings[ $key ] : $default;
 }
@@ -49,11 +49,11 @@ function wh_get_setting( $key, $default = null ) {
  * @param array $new_settings New settings to merge
  * @return bool
  */
-function wh_update_settings( $new_settings ) {
-	$current_settings = wh_get_settings();
+function wholpo_update_settings( $new_settings ) {
+	$current_settings = wholpo_get_settings();
 	$updated_settings = array_merge( $current_settings, $new_settings );
 
-	return update_option( 'wholesale_powerhouse_settings', $updated_settings );
+	return update_option( 'wholpo_settings', $updated_settings );
 }
 
 /**
@@ -61,8 +61,8 @@ function wh_update_settings( $new_settings ) {
  *
  * @return bool
  */
-function wh_is_wholesale_customer() {
-	return WH_Roles::is_wholesale_customer();
+function wholpo_is_wholesale_customer() {
+	return WHOLPO_Roles::is_wholesale_customer();
 }
 
 /**
@@ -70,8 +70,8 @@ function wh_is_wholesale_customer() {
  *
  * @return string|false
  */
-function wh_get_user_wholesale_role() {
-	return WH_Roles::get_user_wholesale_role();
+function wholpo_get_user_wholesale_role() {
+	return WHOLPO_Roles::get_user_wholesale_role();
 }
 
 /**
@@ -81,9 +81,9 @@ function wh_get_user_wholesale_role() {
  * @param string     $role    Wholesale role key
  * @return float|false
  */
-function wh_get_product_wholesale_price( $product, $role = '' ) {
+function wholpo_get_product_wholesale_price( $product, $role = '' ) {
 	if ( ! $role ) {
-		$role = wh_get_user_wholesale_role();
+		$role = wholpo_get_user_wholesale_role();
 	}
 
 	if ( ! $role ) {
@@ -100,7 +100,7 @@ function wh_get_product_wholesale_price( $product, $role = '' ) {
 	}
 
 	// Get global discount for role
-	$settings = wh_get_settings();
+	$settings = wholpo_get_settings();
 	$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 	
 	if ( ! isset( $roles[ $role ] ) || ! isset( $roles[ $role ]['discount'] ) ) {
@@ -126,7 +126,7 @@ function wh_get_product_wholesale_price( $product, $role = '' ) {
  * @param float $price Price value
  * @return string
  */
-function wh_format_price( $price ) {
+function wholpo_format_price( $price ) {
 	return wc_price( $price );
 }
 
@@ -135,7 +135,7 @@ function wh_format_price( $price ) {
  *
  * @param string $message Message to log
  */
-function wh_log( $message ) {
+function wholpo_log( $message ) {
 	if ( defined( 'WP_DEBUG' ) && WP_DEBUG && function_exists( 'wc_get_logger' ) ) {
 		$logger = wc_get_logger();
 		$logger->debug( $message, array( 'source' => 'wholesale-powerhouse' ) );

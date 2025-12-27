@@ -18,7 +18,7 @@ if ( ! defined( 'WPINC' ) ) {
 	<p><?php esc_html_e( 'Apply for wholesale access to get special pricing on bulk orders.', 'wholesale-powerhouse' ); ?></p>
 
 	<form method="post" class="wh-registration-form" id="wh-registration-form">
-		<?php wp_nonce_field( 'wh_registration_form', 'wh_register_nonce' ); ?>
+		<?php wp_nonce_field( 'wholpo_registration_form', 'wh_register_nonce' ); ?>
 
 		<div class="wh-form-section">
 			<h3><?php esc_html_e( 'Account Information', 'wholesale-powerhouse' ); ?></h3>
@@ -101,7 +101,7 @@ if ( ! defined( 'WPINC' ) ) {
 		<p class="wh-form-footer">
 			<small>
 				<?php
-				$settings = wh_get_settings();
+				$settings = wholpo_get_settings();
 				$registration_approval = isset( $settings['registration_approval'] ) ? $settings['registration_approval'] : false;
 				
 				if ( $registration_approval ) {

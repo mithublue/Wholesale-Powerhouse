@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Registration
+ * class WHOLPO_Registration
  * Handles wholesale customer registration
  */
-class WH_Registration {
+class WHOLPO_Registration {
 
 	/**
 	 * Initialize registration module
@@ -29,7 +29,7 @@ class WH_Registration {
 	 */
 	private function init_hooks() {
 		// Register shortcode
-		add_shortcode( 'wholesale_registration_form', array( $this, 'render_registration_form' ) );
+		add_shortcode( 'wholpo_registration_form', array( $this, 'render_registration_form' ) );
 
 		// Handle form submission
 		add_action( 'init', array( $this, 'process_registration' ) );
@@ -51,7 +51,7 @@ class WH_Registration {
 		ob_start();
 
 		// Load template
-		$template_path = WH_POWERHOUSE_PLUGIN_PATH . 'templates/registration-form.php';
+		$template_path = WHOLPO_PLUGIN_PATH . 'templates/registration-form.php';
 		
 		if ( file_exists( $template_path ) ) {
 			include $template_path;
@@ -72,7 +72,7 @@ class WH_Registration {
 		}
 
 		// Verify nonce
-		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wh_register_nonce'] ) ), 'wh_registration_form' ) ) {
+		if ( ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['wh_register_nonce'] ) ), 'wholpo_registration_form' ) ) {
 			wc_add_notice( __( 'Security verification failed. Please try again.', 'wholesale-powerhouse' ), 'error' );
 			return;
 		}
@@ -140,7 +140,7 @@ class WH_Registration {
 		}
 
 		// Get settings
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$registration_approval = isset( $settings['registration_approval'] ) ? $settings['registration_approval'] : false;
 
 		// Assign role based on approval setting

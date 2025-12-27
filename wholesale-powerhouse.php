@@ -25,18 +25,18 @@ if ( ! defined( 'WPINC' ) ) {
 /**
  * Currently plugin version.
  */
-define( 'WH_POWERHOUSE_VERSION', '1.0.0' );
-define( 'WH_POWERHOUSE_PLUGIN_FILE', __FILE__ );
-define( 'WH_POWERHOUSE_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
-define( 'WH_POWERHOUSE_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
-define( 'WH_POWERHOUSE_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
+define( 'WHOLPO_VERSION', '1.0.0' );
+define( 'WHOLPO_PLUGIN_FILE', __FILE__ );
+define( 'WHOLPO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+define( 'WHOLPO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
+define( 'WHOLPO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
 /**
  * Check if WooCommerce is active
  */
-function wh_powerhouse_check_woocommerce() {
+function wholpo_check_woocommerce() {
 	if ( ! class_exists( 'WooCommerce' ) ) {
-		add_action( 'admin_notices', 'wh_powerhouse_woocommerce_missing_notice' );
+		add_action( 'admin_notices', 'wholpo_woocommerce_missing_notice' );
 		return false;
 	}
 	return true;
@@ -45,7 +45,7 @@ function wh_powerhouse_check_woocommerce() {
 /**
  * Display admin notice if WooCommerce is not active
  */
-function wh_powerhouse_woocommerce_missing_notice() {
+function wholpo_woocommerce_missing_notice() {
 	?>
 	<div class="notice notice-error">
 		<p>
@@ -60,39 +60,39 @@ function wh_powerhouse_woocommerce_missing_notice() {
 /**
  * The code that runs during plugin activation.
  */
-function activate_wh_powerhouse() {
-	require_once WH_POWERHOUSE_PLUGIN_PATH . 'includes/class-wh-install.php';
-	WH_Install::activate();
+function wholpo_activate() {
+	require_once WHOLPO_PLUGIN_PATH . 'includes/class-wholpo-install.php';
+	WHOLPO_Install::activate();
 }
 
 /**
  * The code that runs during plugin deactivation.
  */
-function deactivate_wh_powerhouse() {
-	require_once WH_POWERHOUSE_PLUGIN_PATH . 'includes/class-wh-install.php';
-	WH_Install::deactivate();
+function wholpo_deactivate() {
+	require_once WHOLPO_PLUGIN_PATH . 'includes/class-wholpo-install.php';
+	WHOLPO_Install::deactivate();
 }
 
-register_activation_hook( __FILE__, 'activate_wh_powerhouse' );
-register_deactivation_hook( __FILE__, 'deactivate_wh_powerhouse' );
+register_activation_hook( __FILE__, 'wholpo_activate' );
+register_deactivation_hook( __FILE__, 'wholpo_deactivate' );
 
 /**
  * Begin execution of the plugin.
  */
-function run_wh_powerhouse() {
+function wholpo_run() {
 	// Check if WooCommerce is active
-	if ( ! wh_powerhouse_check_woocommerce() ) {
+	if ( ! wholpo_check_woocommerce() ) {
 		return;
 	}
 
 	// Include the main plugin class
-	require_once WH_POWERHOUSE_PLUGIN_PATH . 'includes/class-wh-powerhouse.php';
+	require_once WHOLPO_PLUGIN_PATH . 'includes/class-wholpo-powerhouse.php';
 
 	// Run the plugin
-	$plugin = new WH_Powerhouse();
+	$plugin = new WHOLPO_Powerhouse();
 	$plugin->run();
 }
-add_action( 'plugins_loaded', 'run_wh_powerhouse', 20 );
+add_action( 'plugins_loaded', 'wholpo_run', 20 );
 
 /**
  * Declare compatibility with WooCommerce HPOS (High-Performance Order Storage)

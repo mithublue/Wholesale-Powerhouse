@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Admin_Product
+ * class WHOLPO_Admin_Product
  * Adds wholesale pricing fields to product edit page
  */
-class WH_Admin_Product {
+class WHOLPO_Admin_Product {
 
 	/**
 	 * Initialize product admin
@@ -71,7 +71,7 @@ class WH_Admin_Product {
 		echo '<div class="options_group">';
 
 		// Get wholesale roles
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		echo '<h3 style="padding: 10px;">' . esc_html__( 'Fixed Wholesale Prices', 'wholesale-powerhouse' ) . '</h3>';
@@ -153,11 +153,15 @@ class WH_Admin_Product {
 
 		echo '<h3 style="padding: 10px;">' . esc_html__( 'Visibility', 'wholesale-powerhouse' ) . '</h3>';
 
+		// Get current value
+		$hide_from_retail = sanitize_text_field( get_post_meta( $post->ID, '_wh_hide_from_retail', true ) );
+
 		woocommerce_wp_checkbox(
 			array(
 				'id'          => '_wh_hide_from_retail',
 				'label'       => __( 'Hide from Retail Customers', 'wholesale-powerhouse' ),
 				'description' => __( 'Make this product visible only to wholesale customers', 'wholesale-powerhouse' ),
+				'value'       => $hide_from_retail === '1' ? 'yes' : 'no',
 			)
 		);
 
@@ -178,7 +182,7 @@ class WH_Admin_Product {
 
 
 		// Get wholesale roles
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		// Save fixed prices for each role
@@ -257,7 +261,7 @@ class WH_Admin_Product {
 		$output = array();
 
 		// Check for fixed prices
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {

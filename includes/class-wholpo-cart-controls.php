@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Cart_Controls
+ * class WHOLPO_Cart_Controls
  * Handles minimum order value and coupon restrictions
  */
-class WH_Cart_Controls {
+class WHOLPO_Cart_Controls {
 
 	/**
 	 * Initialize cart controls
@@ -41,12 +41,12 @@ class WH_Cart_Controls {
 	 */
 	public function check_minimum_order_value() {
 		// Only for wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return;
 		}
 
 		// Get minimum cart value setting
-		$settings       = wh_get_settings();
+		$settings       = wholpo_get_settings();
 		$min_cart_value = isset( $settings['min_cart_value'] ) ? floatval( $settings['min_cart_value'] ) : 0;
 
 		// If no minimum is set, allow
@@ -79,12 +79,12 @@ class WH_Cart_Controls {
 	 */
 	public function disable_coupons_for_wholesale( $enabled ) {
 		// Only affect wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return $enabled;
 		}
 
 		// Check if coupons should be disabled
-		$settings        = wh_get_settings();
+		$settings        = wholpo_get_settings();
 		$disable_coupons = isset( $settings['disable_coupons'] ) ? $settings['disable_coupons'] : false;
 
 		if ( $disable_coupons ) {
@@ -103,12 +103,12 @@ class WH_Cart_Controls {
 	 */
 	public function validate_coupon_for_wholesale( $valid, $coupon ) {
 		// Only affect wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return $valid;
 		}
 
 		// Check if coupons should be disabled
-		$settings        = wh_get_settings();
+		$settings        = wholpo_get_settings();
 		$disable_coupons = isset( $settings['disable_coupons'] ) ? $settings['disable_coupons'] : false;
 
 		if ( $disable_coupons ) {

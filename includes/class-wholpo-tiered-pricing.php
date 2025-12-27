@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Tiered_Pricing
+ * class WHOLPO_Tiered_Pricing
  * Handles quantity-based tiered pricing for wholesale customers
  */
-class WH_Tiered_Pricing {
+class WHOLPO_Tiered_Pricing {
 
 	/**
 	 * Initialize tiered pricing
@@ -44,7 +44,7 @@ class WH_Tiered_Pricing {
 	 */
 	public function apply_tiered_pricing_to_price( $price, $product ) {
 		// Only for wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return $price;
 		}
 
@@ -118,7 +118,7 @@ class WH_Tiered_Pricing {
 		global $product;
 
 		// Only for wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return;
 		}
 

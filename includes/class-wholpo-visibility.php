@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Visibility
+ * class WHOLPO_Visibility
  * Manages private store mode and wholesale-only products
  */
-class WH_Visibility {
+class WHOLPO_Visibility {
 
 	/**
 	 * Initialize visibility controls
@@ -45,7 +45,7 @@ class WH_Visibility {
 	 * @return bool
 	 */
 	public function hide_purchase_for_guests( $purchasable, $product ) {
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$private_store = isset( $settings['private_store'] ) ? $settings['private_store'] : false;
 
 		// If private store is enabled and user is not logged in
@@ -64,7 +64,7 @@ class WH_Visibility {
 	 * @return string
 	 */
 	public function hide_price_for_guests( $price_html, $product ) {
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$private_store = isset( $settings['private_store'] ) ? $settings['private_store'] : false;
 
 		// If private store is enabled and user is not logged in
@@ -95,7 +95,7 @@ class WH_Visibility {
 		}
 
 		// If user is wholesale customer, show all products
-		if ( WH_Roles::is_wholesale_customer() ) {
+		if ( WHOLPO_Roles::is_wholesale_customer() ) {
 			return;
 		}
 
@@ -130,7 +130,7 @@ class WH_Visibility {
 	 */
 	public function filter_wholesale_only_visibility( $visible, $product_id ) {
 		// If user is wholesale customer, show product
-		if ( WH_Roles::is_wholesale_customer() ) {
+		if ( WHOLPO_Roles::is_wholesale_customer() ) {
 			return $visible;
 		}
 

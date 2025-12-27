@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Admin_User
+ * class WHOLPO_Admin_User
  * Adds wholesale role management to user profiles
  */
-class WH_Admin_User {
+class WHOLPO_Admin_User {
 
 	/**
 	 * Initialize user admin
@@ -170,7 +170,7 @@ class WH_Admin_User {
 		}
 
 		$user             = get_userdata( $user_id );
-		$wholesale_role   = WH_Roles::get_user_wholesale_role( $user_id );
+		$wholesale_role   = WHOLPO_Roles::get_user_wholesale_role( $user_id );
 		$pending_approval = (bool) get_user_meta( $user_id, 'wh_pending_approval', true );
 
 		if ( $pending_approval ) {
@@ -178,7 +178,7 @@ class WH_Admin_User {
 		}
 
 		if ( $wholesale_role ) {
-			$settings = wh_get_settings();
+			$settings = wholpo_get_settings();
 			$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 			$label    = isset( $roles[ $wholesale_role ]['label'] ) ? $roles[ $wholesale_role ]['label'] : ucfirst( str_replace( 'wh_', '', $wholesale_role ) );
 			
@@ -197,7 +197,7 @@ class WH_Admin_User {
 		echo '<select name="wh_role" id="wh_role" style="float: none;">';
 		echo '<option value="">' . esc_html__( 'All Wholesale Roles', 'wholesale-powerhouse' ) . '</option>';
 
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {
@@ -260,7 +260,7 @@ class WH_Admin_User {
 	 * @return array Modified actions
 	 */
 	public function add_bulk_actions( $actions ) {
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		foreach ( $roles as $role_key => $role_data ) {
@@ -289,7 +289,7 @@ class WH_Admin_User {
 		$role_key = str_replace( 'wh_assign_', '', $action );
 
 		// Validate role
-		$wholesale_roles = WH_Roles::get_wholesale_role_keys();
+		$wholesale_roles = WHOLPO_Roles::get_wholesale_role_keys();
 		if ( ! in_array( $role_key, $wholesale_roles ) ) {
 			return $redirect_url;
 		}

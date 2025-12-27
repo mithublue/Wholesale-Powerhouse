@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Roles
+ * class WHOLPO_Roles
  * Manages wholesale user roles
  */
-class WH_Roles {
+class WHOLPO_Roles {
 
 	/**
 	 * Get all wholesale role keys
@@ -32,7 +32,7 @@ class WH_Roles {
 	 * @return array
 	 */
 	public static function get_wholesale_roles() {
-		$settings = get_option( 'wholesale_powerhouse_settings', array() );
+		$settings = get_option( 'wholpo_settings', array() );
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		return $roles;

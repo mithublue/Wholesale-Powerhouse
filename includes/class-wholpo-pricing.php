@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Pricing
+ * class WHOLPO_Pricing
  * Handles the dual pricing system (Fixed Price or Global Discount)
  */
-class WH_Pricing {
+class WHOLPO_Pricing {
 
 	/**
 	 * Flag to prevent infinite loops
@@ -66,12 +66,12 @@ class WH_Pricing {
 		}
 
 		// Check if user is a wholesale customer
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return $price;
 		}
 
 		// Get user's wholesale role
-		$user_role = WH_Roles::get_user_wholesale_role();
+		$user_role = WHOLPO_Roles::get_user_wholesale_role();
 		if ( ! $user_role ) {
 			return $price;
 		}
@@ -109,7 +109,7 @@ class WH_Pricing {
 	 */
 	private function apply_global_discount( $price, $user_role, $product ) {
 		// Get settings
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 		$roles    = isset( $settings['roles'] ) ? $settings['roles'] : array();
 
 		// Check if role has discount configured
@@ -143,11 +143,11 @@ class WH_Pricing {
 	 */
 	public function get_variation_prices( $prices, $product, $display ) {
 		// Only modify for wholesale customers
-		if ( ! WH_Roles::is_wholesale_customer() ) {
+		if ( ! WHOLPO_Roles::is_wholesale_customer() ) {
 			return $prices;
 		}
 
-		$user_role = WH_Roles::get_user_wholesale_role();
+		$user_role = WHOLPO_Roles::get_user_wholesale_role();
 		if ( ! $user_role ) {
 			return $prices;
 		}
@@ -191,7 +191,7 @@ class WH_Pricing {
 	 * @return array Modified hash
 	 */
 	public function add_user_role_to_price_hash( $hash, $product, $display ) {
-		$user_role = WH_Roles::get_user_wholesale_role();
+		$user_role = WHOLPO_Roles::get_user_wholesale_role();
 		if ( $user_role ) {
 			$hash[] = $user_role;
 		}

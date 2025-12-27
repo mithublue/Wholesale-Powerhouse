@@ -12,10 +12,10 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Admin_Settings
+ * class WHOLPO_Admin_Settings
  * Adds WooCommerce settings tab for Wholesale configuration
  */
-class WH_Admin_Settings {
+class WHOLPO_Admin_Settings {
 
 	/**
 	 * Initialize settings
@@ -62,7 +62,7 @@ class WH_Admin_Settings {
 		global $current_section;
 
 		// Get settings
-		$settings = wh_get_settings();
+		$settings = wholpo_get_settings();
 
 		if ( ! isset( $_POST['_wh_settings_nonce'] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST['_wh_settings_nonce'] ) ), 'wh_save_settings' ) ) {
 			return;
@@ -85,11 +85,11 @@ class WH_Admin_Settings {
 		$settings['private_store']         = isset( $_POST['wh_private_store'] );
 		$settings['min_cart_value']        = isset( $_POST['wh_min_cart_value'] ) ? floatval( wp_unslash( $_POST['wh_min_cart_value'] ) ) : 0;
 		$settings['disable_coupons']       = isset( $_POST['wh_disable_coupons'] );
-		$settings['registration_approval'] = isset( $_POST['wh_registration_approval'] );
-		$settings['registration_page_id']  = isset( $_POST['wh_registration_page_id'] ) ? absint( wp_unslash( $_POST['wh_registration_page_id'] ) ) : 0;
+		$settings['registration_approval'] = isset( $_POST['WHOLPO_Registration_approval'] );
+		$settings['registration_page_id']  = isset( $_POST['WHOLPO_Registration_page_id'] ) ? absint( wp_unslash( $_POST['WHOLPO_Registration_page_id'] ) ) : 0;
 
 		// Save settings
-		update_option( 'wholesale_powerhouse_settings', $settings );
+		update_option( 'wholpo_settings', $settings );
 
 		// Show success message
 		WC_Admin_Settings::add_message( __( 'Wholesale settings saved successfully.', 'wholesale-powerhouse' ) );
@@ -102,7 +102,7 @@ class WH_Admin_Settings {
 	 * @return array Settings
 	 */
 	public function get_settings( $current_section = '' ) {
-		$current_settings = wh_get_settings();
+		$current_settings = wholpo_get_settings();
 		$roles            = isset( $current_settings['roles'] ) ? $current_settings['roles'] : array();
 
 		$settings = array(
@@ -204,13 +204,13 @@ class WH_Admin_Settings {
 			'title' => __( 'Registration Settings', 'wholesale-powerhouse' ),
 			'type'  => 'title',
 			'desc'  => __( 'Configure wholesale customer registration.', 'wholesale-powerhouse' ),
-			'id'    => 'wh_registration_options',
+			'id'    => 'WHOLPO_Registration_options',
 		);
 
 		$settings[] = array(
 			'title'   => __( 'Registration Approval', 'wholesale-powerhouse' ),
 			'desc'    => __( 'Require admin approval for new wholesale registrations', 'wholesale-powerhouse' ),
-			'id'      => 'wh_registration_approval',
+			'id'      => 'WHOLPO_Registration_approval',
 			'type'    => 'checkbox',
 			'default' => 'no',
 			'value'   => isset( $current_settings['registration_approval'] ) && $current_settings['registration_approval'] ? 'yes' : 'no',
@@ -226,7 +226,7 @@ class WH_Admin_Settings {
 		$settings[] = array(
 			'title'    => __( 'Registration Page', 'wholesale-powerhouse' ),
 			'desc'     => __( 'Select the page that contains the [wholesale_registration_form] shortcode', 'wholesale-powerhouse' ),
-			'id'       => 'wh_registration_page_id',
+			'id'       => 'WHOLPO_Registration_page_id',
 			'type'     => 'select',
 			'options'  => $page_options,
 			'default'  => '',
@@ -236,7 +236,7 @@ class WH_Admin_Settings {
 
 		$settings[] = array(
 			'type' => 'sectionend',
-			'id'   => 'wh_registration_options',
+			'id'   => 'WHOLPO_Registration_options',
 		);
 
 		return $settings;

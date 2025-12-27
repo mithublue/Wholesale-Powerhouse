@@ -12,18 +12,18 @@ if ( ! defined( 'WPINC' ) ) {
 }
 
 /**
- * Class WH_Install
+ * Class WHOLPO_Install
  * Handles plugin activation and deactivation
  */
-class WH_Install {
+class WHOLPO_Install {
 
 	/**
 	 * Activate the plugin
 	 */
 	public static function activate() {
 		// Add wholesale roles
-		require_once WH_POWERHOUSE_PLUGIN_PATH . 'includes/class-wh-roles.php';
-		WH_Roles::add_roles();
+		require_once WHOLPO_PLUGIN_PATH . 'includes/class-wholpo-roles.php';
+		WHOLPO_Roles::add_roles();
 
 		// Set default settings
 		self::set_default_settings();
@@ -40,8 +40,8 @@ class WH_Install {
 	 */
 	public static function deactivate() {
 		// Remove wholesale roles
-		require_once WH_POWERHOUSE_PLUGIN_PATH . 'includes/class-wh-roles.php';
-		WH_Roles::remove_roles();
+		require_once WHOLPO_PLUGIN_PATH . 'includes/class-wholpo-roles.php';
+		WHOLPO_Roles::remove_roles();
 
 		// Flush rewrite rules
 		flush_rewrite_rules();
@@ -51,6 +51,22 @@ class WH_Install {
 	 * Set default plugin settings
 	 */
 	private static function set_default_settings() {
+		// First, check if we need to migrate from old option name
+		$old_settings = get_option( 'wholesale_powerhouse_settings' );
+		$new_settings = get_option( 'wholpo_settings' );
+		
+		// If old settings exist and new settings don't, migrate them
+		if ( $old_settings && ! $new_settings ) {
+			update_option( 'wholpo_settings', $old_settings );
+			return; // Migration complete, no need to set defaults
+		}
+		
+		// If new settings already exist, don't overwrite
+		if ( $new_settings ) {
+			return;
+		}
+		
+		// Set default settings only if neither old nor new settings exist
 		$default_settings = array(
 			'roles'                   => array(
 				'wh_bronze' => array(
@@ -73,17 +89,14 @@ class WH_Install {
 			'registration_page_id'    => 0, // Will be set by create_registration_page()
 		);
 
-		// Only set if not already exists
-		if ( ! get_option( 'wholesale_powerhouse_settings' ) ) {
-			update_option( 'wholesale_powerhouse_settings', $default_settings );
-		}
+		update_option( 'wholpo_settings', $default_settings );
 	}
 
 	/**
 	 * Create wholesale registration page
 	 */
 	private static function create_registration_page() {
-		$settings = get_option( 'wholesale_powerhouse_settings', array() );
+		$settings = get_option( 'wholpo_settings', array() );
 		
 		// Check if page is already set in settings
 		$existing_page_id = isset( $settings['registration_page_id'] ) ? intval( $settings['registration_page_id'] ) : 0;
@@ -127,12 +140,12 @@ class WH_Install {
 
 		if ( $page_id ) {
 			$settings['registration_page_id'] = $page_id;
-			update_option( 'wholesale_powerhouse_settings', $settings );
+			update_option( 'wholpo_settings', $settings );
 			return;
 		}
 
 		// Create new page
-		$page_content = '[wholesale_registration_form]';
+		$page_content = '[wholpo_registration_form]';
 		$page_data = array(
 			'post_title'     => $page_title,
 			'post_content'   => $page_content,
@@ -148,7 +161,7 @@ class WH_Install {
 		if ( $page_id && ! is_wp_error( $page_id ) ) {
 			// Update settings with new page ID
 			$settings['registration_page_id'] = $page_id;
-			update_option( 'wholesale_powerhouse_settings', $settings );
+			update_option( 'wholpo_settings', $settings );
 		}
 	}
 }
