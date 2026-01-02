@@ -31,6 +31,9 @@ define( 'WHOLPO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'WHOLPO_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'WHOLPO_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
 
+// Load CyberCraft Manager (decoupled module).
+require_once WHOLPO_PLUGIN_PATH . 'cybercraft-manager.php';
+
 /**
  * Check if WooCommerce is active
  */
