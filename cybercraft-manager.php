@@ -109,38 +109,303 @@ class CyberCraft_Manager {
 			return;
 		}
 
-		// Get the URL of this file's directory.
-		$plugin_url = $this->get_module_url();
-
-		// Enqueue JavaScript.
-		wp_enqueue_script(
-			'cybercraft-manager-js',
-			$plugin_url . 'assets/js/cybercraft.js',
-			array( 'jquery' ),
-			'1.0.0',
-			true
-		);
-
-		wp_localize_script(
-			'cybercraft-manager-js',
-			'cybercraftAjax',
-			array(
-				'ajaxUrl' => admin_url( 'admin-ajax.php' ),
-				'nonce'   => wp_create_nonce( 'cybercraft_nonce' ),
-			)
-		);
+		// Inline JavaScript instead of external file.
+		add_action( 'admin_footer', array( $this, 'print_inline_script' ) );
 	}
 
 	/**
-	 * Get the URL of this module's directory.
-	 *
-	 * @return string Module URL.
+	 * Print inline JavaScript.
 	 */
-	private function get_module_url() {
-		$file_path = wp_normalize_path( __FILE__ );
-		$plugins_path = wp_normalize_path( WP_PLUGIN_DIR );
-		$relative_path = str_replace( $plugins_path, '', dirname( $file_path ) );
-		return plugins_url( $relative_path ) . '/';
+	public function print_inline_script() {
+		$nonce    = wp_create_nonce( 'cybercraft_nonce' );
+		$ajax_url = admin_url( 'admin-ajax.php' );
+		?>
+		<script type="text/javascript">
+		jQuery(document).ready(function($) {
+			const CyberCraft = {
+				currentSource: 'cybercraftit',
+				
+				init: function() {
+					this.bindEvents();
+					this.loadPlugins('cybercraftit');
+				},
+				
+				bindEvents: function() {
+					// Tab switching
+					$('.cc-tab').on('click', function() {
+						$('.cc-tab').removeClass('active');
+						$(this).addClass('active');
+						
+						const source = $(this).data('source');
+						CyberCraft.currentSource = source;
+						CyberCraft.loadPlugins(source);
+					});
+					
+					// Plugin actions (delegated events)
+					$(document).on('click', '.cc-btn-install', function() {
+						const $btn = $(this);
+						const slug = $btn.data('slug');
+						const downloadUrl = $btn.data('download-url');
+						CyberCraft.installPlugin(slug, downloadUrl, $btn);
+					});
+					
+					$(document).on('click', '.cc-btn-activate', function() {
+						const $btn = $(this);
+						const slug = $btn.data('slug');
+						CyberCraft.activatePlugin(slug, $btn);
+					});
+					
+					$(document).on('click', '.cc-btn-deactivate', function() {
+						const $btn = $(this);
+						const slug = $btn.data('slug');
+						CyberCraft.deactivatePlugin(slug, $btn);
+					});
+					
+					$(document).on('click', '.cc-btn-delete', function() {
+						if (!confirm('Are you sure you want to delete this plugin?')) {
+							return;
+						}
+						const $btn = $(this);
+						const slug = $btn.data('slug');
+						CyberCraft.deletePlugin(slug, $btn);
+					});
+				},
+				
+				loadPlugins: function(source) {
+					$('#cc-loading').removeClass('cc-hidden');
+					$('#cc-plugins-grid').addClass('cc-hidden');
+					
+					$.ajax({
+						url: '<?php echo esc_js( $ajax_url ); ?>',
+						type: 'POST',
+						data: {
+							action: 'cc_fetch_plugins',
+							nonce: '<?php echo esc_js( $nonce ); ?>',
+							source: source
+						},
+						success: function(response) {
+							if (response.success) {
+								CyberCraft.renderPlugins(response.data);
+							} else {
+								CyberCraft.showMessage('error', response.data || 'Failed to load plugins');
+							}
+						},
+						error: function() {
+							CyberCraft.showMessage('error', 'Failed to load plugins');
+						},
+						complete: function() {
+							$('#cc-loading').addClass('cc-hidden');
+							$('#cc-plugins-grid').removeClass('cc-hidden');
+						}
+					});
+				},
+				
+				renderPlugins: function(plugins) {
+					const $grid = $('#cc-plugins-grid');
+					$grid.empty();
+					
+					if (plugins.length === 0) {
+						$grid.html('<p style="grid-column: 1/-1; text-align: center; color: #6b7280;">No plugins found.</p>');
+						return;
+					}
+					
+					plugins.forEach(function(plugin) {
+						const card = CyberCraft.createPluginCard(plugin);
+						$grid.append(card);
+					});
+				},
+				
+				createPluginCard: function(plugin) {
+					const initial = plugin.name.charAt(0).toUpperCase();
+					const installed = plugin.installed;
+					const active = plugin.active;
+					
+					let actionButtons = '';
+					if (!installed) {
+						actionButtons = `<button class="cc-btn cc-btn-primary cc-btn-install" data-slug="${plugin.slug}" data-download-url="${plugin.download_url}">
+							<span class="dashicons dashicons-download"></span> Install
+						</button>`;
+					} else if (!active) {
+						actionButtons = `
+							<button class="cc-btn cc-btn-success cc-btn-activate" data-slug="${plugin.slug}">
+								<span class="dashicons dashicons-yes"></span> Activate
+							</button>
+							<button class="cc-btn cc-btn-danger cc-btn-delete" data-slug="${plugin.slug}">
+								<span class="dashicons dashicons-trash"></span> Delete
+							</button>
+						`;
+					} else {
+						actionButtons = `<button class="cc-btn cc-btn-secondary cc-btn-deactivate" data-slug="${plugin.slug}">
+							<span class="dashicons dashicons-no"></span> Deactivate
+						</button>`;
+					}
+					
+					const badges = installed ? '<span class="cc-badge cc-badge-installed">Installed</span>' : '';
+					const activeBadge = active ? '<span class="cc-badge cc-badge-active">Active</span>' : '';
+					
+					return `
+						<div class="cc-plugin-card">
+							<div class="cc-plugin-header">
+								<div class="cc-plugin-icon">${initial}</div>
+								<div class="cc-plugin-info">
+									<h3 class="cc-plugin-name">${plugin.name}</h3>
+									<p class="cc-plugin-author">by ${plugin.author}</p>
+								</div>
+							</div>
+							<p class="cc-plugin-description">${plugin.description}</p>
+							<div class="cc-plugin-meta">
+								<span class="cc-meta-item">
+									<span class="dashicons dashicons-download"></span>
+									${plugin.downloads} downloads
+								</span>
+								<span class="cc-meta-item">
+									<span class="dashicons dashicons-star-filled"></span>
+									${plugin.rating}/5
+								</span>
+								<span class="cc-meta-item">
+									<span class="dashicons dashicons-admin-plugins"></span>
+									v${plugin.version}
+								</span>
+							</div>
+							<div style="margin-bottom: 15px;">
+								${badges} ${activeBadge}
+							</div>
+							<div class="cc-plugin-actions">
+								${actionButtons}
+							</div>
+						</div>
+					`;
+				},
+				
+				installPlugin: function(slug, downloadUrl, $btn) {
+					$btn.prop('disabled', true).html('<span class="dashicons dashicons-update cc-spinner"></span> Installing...');
+					
+					$.ajax({
+						url: '<?php echo esc_js( $ajax_url ); ?>',
+						type: 'POST',
+						data: {
+							action: 'cc_install_plugin',
+							nonce: '<?php echo esc_js( $nonce ); ?>',
+							slug: slug,
+							download_url: downloadUrl
+						},
+						success: function(response) {
+							if (response.success) {
+								CyberCraft.showMessage('success', 'Plugin installed successfully!');
+								CyberCraft.loadPlugins(CyberCraft.currentSource);
+							} else {
+								CyberCraft.showMessage('error', response.data || 'Installation failed');
+								$btn.prop('disabled', false).html('<span class="dashicons dashicons-download"></span> Install');
+							}
+						},
+						error: function() {
+							CyberCraft.showMessage('error', 'Installation failed');
+							$btn.prop('disabled', false).html('<span class="dashicons dashicons-download"></span> Install');
+						}
+					});
+				},
+				
+				activatePlugin: function(slug, $btn) {
+					$btn.prop('disabled', true).html('<span class="dashicons dashicons-update cc-spinner"></span> Activating...');
+					
+					$.ajax({
+						url: '<?php echo esc_js( $ajax_url ); ?>',
+						type: 'POST',
+						data: {
+							action: 'cc_activate_plugin',
+							nonce: '<?php echo esc_js( $nonce ); ?>',
+							slug: slug
+						},
+						success: function(response) {
+							if (response.success) {
+								CyberCraft.showMessage('success', 'Plugin activated successfully!');
+								CyberCraft.loadPlugins(CyberCraft.currentSource);
+							} else {
+								CyberCraft.showMessage('error', response.data || 'Activation failed');
+								$btn.prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> Activate');
+							}
+						},
+						error: function() {
+							CyberCraft.showMessage('error', 'Activation failed');
+							$btn.prop('disabled', false).html('<span class="dashicons dashicons-yes"></span> Activate');
+						}
+					});
+				},
+				
+				deactivatePlugin: function(slug, $btn) {
+					$btn.prop('disabled', true).html('<span class="dashicons dashicons-update cc-spinner"></span> Deactivating...');
+					
+					$.ajax({
+						url: '<?php echo esc_js( $ajax_url ); ?>',
+						type: 'POST',
+						data: {
+							action: 'cc_deactivate_plugin',
+							nonce: '<?php echo esc_js( $nonce ); ?>',
+							slug: slug
+						},
+						success: function(response) {
+							if (response.success) {
+								CyberCraft.showMessage('success', 'Plugin deactivated successfully!');
+								CyberCraft.loadPlugins(CyberCraft.currentSource);
+							} else {
+								CyberCraft.showMessage('error', response.data || 'Deactivation failed');
+								$btn.prop('disabled', false).html('<span class="dashicons dashicons-no"></span> Deactivate');
+							}
+						},
+						error: function() {
+							CyberCraft.showMessage('error', 'Deactivation failed');
+							$btn.prop('disabled', false).html('<span class="dashicons dashicons-no"></span> Deactivate');
+						}
+					});
+				},
+				
+				deletePlugin: function(slug, $btn) {
+					$btn.prop('disabled', true).html('<span class="dashicons dashicons-update cc-spinner"></span> Deleting...');
+					
+					$.ajax({
+						url: '<?php echo esc_js( $ajax_url ); ?>',
+						type: 'POST',
+						data: {
+							action: 'cc_delete_plugin',
+							nonce: '<?php echo esc_js( $nonce ); ?>',
+							slug: slug
+						},
+						success: function(response) {
+							if (response.success) {
+								CyberCraft.showMessage('success', 'Plugin deleted successfully!');
+								CyberCraft.loadPlugins(CyberCraft.currentSource);
+							} else {
+								CyberCraft.showMessage('error', response.data || 'Deletion failed');
+								$btn.prop('disabled', false).html('<span class="dashicons dashicons-trash"></span> Delete');
+							}
+						},
+						error: function() {
+							CyberCraft.showMessage('error', 'Deletion failed');
+							$btn.prop('disabled', false).html('<span class="dashicons dashicons-trash"></span> Delete');
+						}
+					});
+				},
+				
+				showMessage: function(type, message) {
+					const $messages = $('#cc-messages');
+					const messageClass = type === 'success' ? 'cc-message-success' : 'cc-message-error';
+					const $message = $(`<div class="cc-message ${messageClass}">${message}</div>`);
+					
+					$messages.html($message);
+					
+					setTimeout(function() {
+						$message.fadeOut(function() {
+							$(this).remove();
+						});
+					}, 5000);
+				}
+			};
+			
+			// Initialize
+			CyberCraft.init();
+		});
+		</script>
+		<?php
 	}
 
 	/**
